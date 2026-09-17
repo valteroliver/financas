@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minhas Finanças</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #f0f2f5; margin: 0; padding: 15px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 450px; }
+    .card-saldo { background: #1b5e20; color: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; text-align: center; }
+    .card-saldo h3 { margin: 0 0 5px 0; font-size: 14px; opacity: 0.9; }
+    .card-saldo h1 { margin: 0; font-size: 32px; }
+    .formulario { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; }
+    input, select, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; }
+    button { background: #2e7d32; color: white; border: none; font-weight: bold; cursor: pointer; }
+    .transacoes { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+    li:last-child { border-bottom: none; }
+    .receita { color: #2e7d32; font-weight: bold; }
+    .despesa { color: #c62828; font-weight: bold; }
+    .btn-deletar { width: auto; padding: 5px 10px; margin: 0; background: #e0e0e0; color: #333; font-size: 12px; border-radius: 4px; }
+    .btn-backup { background: #0288d1; margin-top: 15px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card-saldo">
+    <h3>SALDO ATUAL</h3>
+    <h1 id="saldoTotal">R$ 0,00</h1>
+  </div>
+
+  <div class="formulario">
+    <input type="text" id="descricao" placeholder="Descrição (ex: Aluguel, Salário)">
+    <input type="number" id="valor" placeholder="Valor (ex: 150.00)" step="0.01">
+    <select id="tipo">
+      <option value="despesa">Despesa (-)</option>
+      <option value="receita">Receita (+)</option>
+    </select>
+    <button onclick="adicionarItem()">Adicionar</button>
+  </div>
+
+  <div class="transacoes">
+    <h3>Histórico</h3>
+    <ul id="listaTransacoes"></ul>
+    <button class="btn-backup" onclick="exportarBackup()">Fazer Backup (Exportar Dados)</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
