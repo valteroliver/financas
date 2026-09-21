@@ -1,5 +1,5 @@
 // Mudamos o nome para v3 para forçar o celular a atualizar
-const CACHE_NAME = 'financas-v4';
+const CACHE_NAME = 'financas-v5';
 const ASSETS = [
   './',
   './index.html',
