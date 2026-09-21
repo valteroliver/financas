@@ -2,54 +2,202 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minhas Finanças</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Finanças Pro</title>
   <link rel="manifest" href="manifest.json">
+  <!-- Biblioteca de Gráficos Leve e Offline -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: #f0f2f5; margin: 0; padding: 15px; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 450px; }
-    .card-saldo { background: #1b5e20; color: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; text-align: center; }
-    .card-saldo h3 { margin: 0 0 5px 0; font-size: 14px; opacity: 0.9; }
-    .card-saldo h1 { margin: 0; font-size: 32px; }
-    .formulario { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; }
-    input, select, button { width: 100%; padding: 12px; margin-top: 8px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; }
-    button { background: #2e7d32; color: white; border: none; font-weight: bold; cursor: pointer; }
-    .transacoes { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    ul { list-style: none; padding: 0; margin: 0; }
-    li { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
-    li:last-child { border-bottom: none; }
-    .receita { color: #2e7d32; font-weight: bold; }
-    .despesa { color: #c62828; font-weight: bold; }
-    .btn-deletar { width: auto; padding: 5px 10px; margin: 0; background: #e0e0e0; color: #333; font-size: 12px; border-radius: 4px; }
-    .btn-backup { background: #0288d1; margin-top: 15px; }
+    :root {
+      --primary: #0f172a;
+      --accent: #2563eb;
+      --green: #10b981;
+      --red: #ef4444;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+    }
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 80px; }
+    
+    /* Header Fintech */
+    .header { background: var(--primary); color: white; padding: 25px 20px 20px; border-radius: 0 0 24px 24px; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .user-info { font-size: 14px; opacity: 0.8; }
+    .saldo-card { background: rgba(255, 255, 255, 0.08); padding: 18px; border-radius: 16px; backdrop-filter: blur(10px); }
+    .saldo-titulo { font-size: 13px; opacity: 0.8; margin-bottom: 5px; }
+    .saldo-valor { font-size: 28px; font-weight: bold; }
+    
+    /* Resumo Cards */
+    .resumo-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 15px; }
+    .resumo-item { background: var(--card); padding: 12px 10px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.03); text-align: center; }
+    .resumo-item span { font-size: 11px; color: var(--text-muted); display: block; }
+    .resumo-item strong { font-size: 14px; margin-top: 4px; display: block; }
+    .text-green { color: var(--green); }
+    .text-red { color: var(--red); }
+    .text-blue { color: var(--accent); }
+
+    /* Conteúdo das Telas */
+    .content { padding: 20px; max-width: 500px; margin: auto; }
+    .tab-view { display: none; }
+    .tab-view.active { display: block; }
+
+    /* Cards e Gráficos */
+    .card { background: var(--card); border-radius: 16px; padding: 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); margin-bottom: 16px; }
+    .card-title { font-size: 15px; font-weight: bold; margin-bottom: 14px; display: flex; justify-content: space-between; }
+
+    /* Lançamentos */
+    .transacao-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+    .transacao-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-right: 12px; }
+    .transacao-dados { flex: 1; }
+    .transacao-nome { font-weight: 600; font-size: 14px; }
+    .transacao-cat { font-size: 12px; color: var(--text-muted); }
+
+    /* Barra de Metas */
+    .meta-progresso { background: #e2e8f0; border-radius: 8px; height: 10px; width: 100%; margin: 8px 0; overflow: hidden; }
+    .meta-barra { background: var(--accent); height: 100%; border-radius: 8px; }
+
+    /* Botão Flutuante + */
+    .fab { position: fixed; bottom: 80px; right: 20px; background: var(--accent); color: white; width: 56px; height: 56px; border-radius: 28px; border: none; font-size: 28px; box-shadow: 0 4px 12px rgba(37,99,235,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+    /* Menu Inferior Fixo */
+    .nav-bottom { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 10px 0; max-width: 500px; margin: auto; }
+    .nav-item { border: none; background: transparent; font-size: 11px; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+    .nav-item.active { color: var(--accent); font-weight: bold; }
+    .nav-icon { font-size: 20px; }
+
+    /* Modal de Cadastro */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); align-items: flex-end; justify-content: center; z-index: 99; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; width: 100%; max-width: 500px; border-radius: 24px 24px 0 0; padding: 24px; animation: slideUp 0.2s ease-out; }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    input, select, .btn-primary { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 15px; margin-top: 10px; }
+    .btn-primary { background: var(--accent); color: white; font-weight: bold; border: none; cursor: pointer; }
+    .btn-danger { background: #fee2e2; color: var(--red); border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="card-saldo">
-    <h3>SALDO ATUAL</h3>
-    <h1 id="saldoTotal">R$ 0,00</h1>
+  <!-- Tela 1: Dashboard -->
+  <div id="tab-dashboard" class="tab-view active">
+    <div class="header">
+      <div class="header-top">
+        <div class="user-info">Olá, Bem-vindo(a) 👋</div>
+      </div>
+      <div class="saldo-card">
+        <div class="saldo-titulo">Patrimônio Líquido</div>
+        <div class="saldo-valor" id="saldoTotal">R$ 0,00</div>
+      </div>
+      <div class="resumo-grid">
+        <div class="resumo-item">
+          <span>Receitas</span>
+          <strong class="text-green" id="totalReceitas">+ R$ 0</strong>
+        </div>
+        <div class="resumo-item">
+          <span>Despesas</span>
+          <strong class="text-red" id="totalDespesas">- R$ 0</strong>
+        </div>
+        <div class="resumo-item">
+          <span>Investido</span>
+          <strong class="text-blue" id="totalInvestido">R$ 0</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- Gráfico de Categoria -->
+      <div class="card">
+        <div class="card-title">Gastos por Categoria</div>
+        <canvas id="graficoCategorias" height="200"></canvas>
+      </div>
+
+      <!-- Últimos Lançamentos -->
+      <div class="card">
+        <div class="card-title">Últimos Lançamentos</div>
+        <div id="listaRecentes"></div>
+      </div>
+    </div>
   </div>
 
-  <div class="formulario">
-    <input type="text" id="descricao" placeholder="Descrição (ex: Aluguel, Salário)">
-    <input type="number" id="valor" placeholder="Valor (ex: 150.00)" step="0.01">
-    <select id="tipo">
-      <option value="despesa">Despesa (-)</option>
-      <option value="receita">Receita (+)</option>
-    </select>
-    <button onclick="adicionarItem()">Adicionar</button>
+  <!-- Tela 2: Todos os Lançamentos -->
+  <div id="tab-lancamentos" class="tab-view">
+    <div class="content">
+      <h2 style="margin-bottom: 15px;">Extrato Geral</h2>
+      <div class="card">
+        <div id="listaCompleta"></div>
+      </div>
+    </div>
   </div>
 
-  <div class="transacoes">
-    <h3>Histórico</h3>
-    <ul id="listaTransacoes"></ul>
-    <button class="btn-backup" onclick="exportarBackup()">Fazer Backup (Exportar Dados)</button>
+  <!-- Tela 3: Metas & Investimentos -->
+  <div id="tab-metas" class="tab-view">
+    <div class="content">
+      <h2 style="margin-bottom: 15px;">Metas Financeiras</h2>
+      <div id="listaMetas"></div>
+      <div class="card">
+        <div class="card-title">Nova Meta</div>
+        <input type="text" id="metaTitulo" placeholder="Objetivo (ex: Carro Novo, Reserva)">
+        <input type="number" id="metaAlvo" placeholder="Valor Desejado (R$)">
+        <button class="btn-primary" onclick="criarMeta()">Adicionar Meta</button>
+      </div>
+    </div>
   </div>
-</div>
 
-<script src="app.js"></script>
+  <!-- Tela 4: Ajustes e Backup -->
+  <div id="tab-config" class="tab-view">
+    <div class="content">
+      <h2 style="margin-bottom: 15px;">Configurações</h2>
+      <div class="card">
+        <div class="card-title">Seus Dados</div>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Seus dados ficam 100% no seu aparelho. Exporte cópias de segurança periodicamente:</p>
+        <button class="btn-primary" onclick="exportarBackup()">Baixar Backup (JSON)</button>
+        <input type="file" id="importInput" style="display:none;" onchange="importarBackup(event)">
+        <button class="btn-primary" style="background: #475569;" onclick="document.getElementById('importInput').click()">Restaurar Backup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botão Flutuante de Adicionar -->
+  <button class="fab" onclick="abrirModal()">+</button>
+
+  <!-- Modal Novo Lançamento -->
+  <div class="modal" id="modalTransacao">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 10px;">Novo Lançamento</h3>
+      <input type="text" id="desc" placeholder="Descrição (ex: Supermercado)">
+      <input type="number" id="valor" placeholder="Valor (R$)" step="0.01">
+      <select id="tipo" onchange="atualizarOpcoesCategorias()">
+        <option value="despesa">Despesa (-)</option>
+        <option value="receita">Receita (+)</option>
+        <option value="investimento">Investimento (Guardar)</option>
+      </select>
+      <select id="categoria"></select>
+      <button class="btn-primary" onclick="salvarTransacao()">Confirmar</button>
+      <button class="btn-primary" style="background:#e2e8f0; color:#333; margin-top:8px;" onclick="fecharModal()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Barra de Navegação Inferior -->
+  <div class="nav-bottom">
+    <button class="nav-item active" onclick="navegar('tab-dashboard', this)">
+      <span class="nav-icon">📊</span>
+      <span>Início</span>
+    </button>
+    <button class="nav-item" onclick="navegar('tab-lancamentos', this)">
+      <span class="nav-icon">💳</span>
+      <span>Extrato</span>
+    </button>
+    <button class="nav-item" onclick="navegar('tab-metas', this)">
+      <span class="nav-icon">🎯</span>
+      <span>Metas</span>
+    </button>
+    <button class="nav-item" onclick="navegar('tab-config', this)">
+      <span class="nav-icon">⚙️</span>
+      <span>Ajustes</span>
+    </button>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
