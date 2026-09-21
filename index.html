@@ -22,7 +22,7 @@
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
     body { background-color: var(--bg); color: var(--text); padding-bottom: 90px; }
 
-    /* Tela de Bloqueio por PIN */
+    /* Tela de Bloqueio */
     #lockscreen {
       position: fixed; inset: 0; background: var(--blue-gradient); z-index: 1000;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -34,8 +34,12 @@
     .teclado-pin { display: grid; grid-template-columns: repeat(3, 75px); gap: 15px; }
     .btn-pin { width: 75px; height: 75px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    /* Topo Padrão */
+    /* Topo Padrão com Avatar */
     .top-header { background: var(--blue-gradient); color: white; padding: 25px 20px 20px; border-radius: 0 0 28px 28px; }
+    .header-saudacao { display: flex; justify-content: space-between; align-items: center; }
+    .perfil-box { display: flex; align-items: center; gap: 12px; }
+    .avatar-img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid white; background: rgba(255,255,255,0.2); }
+    
     .saldo-box { background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); padding: 18px; border-radius: 20px; margin-top: 15px; }
     .saldo-box .label { font-size: 13px; opacity: 0.85; }
     .saldo-box .valor { font-size: 28px; font-weight: bold; margin-top: 4px; }
@@ -62,19 +66,11 @@
     /* Barras de Progresso */
     .barra-container { background: #e2e8f0; border-radius: 10px; height: 10px; width: 100%; overflow: hidden; margin: 8px 0; }
     .barra-preenchimento { height: 100%; border-radius: 10px; transition: width 0.4s ease; }
-    .cor-verde { background: var(--green); }
-    .cor-laranja { background: var(--orange); }
-    .cor-vermelho { background: var(--red); }
     .cor-azul { background: var(--blue-main); }
 
-    .aviso-inteligente { background: #dcfce7; border: 1px solid #bbf7d0; color: #166534; padding: 15px; border-radius: 16px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
-
-    /* Dívidas */
-    .card-total-divida { background: #fff1f2; border: 1px solid #fecdd3; border-radius: 20px; padding: 18px; margin-bottom: 15px; }
-    .divida-item { background: var(--card); border-radius: 18px; padding: 16px; box-shadow: var(--shadow); margin-bottom: 12px; border-left: 5px solid var(--red); }
-
-    /* Calendário */
-    .calendario-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: bold; }
+    /* CALENDÁRIO */
+    .nav-mes-calendario { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .btn-mes { background: #f1f5f9; border: none; border-radius: 8px; width: 34px; height: 34px; font-size: 16px; cursor: pointer; }
     .calendario-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
     .cal-dia-semana { font-size: 11px; color: var(--text-muted); font-weight: bold; padding-bottom: 4px; }
     .cal-dia { padding: 10px 0; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; background: #f8fafc; position: relative; }
@@ -82,17 +78,15 @@
     .cal-dia.tem-receita::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
     .cal-dia.selecionado { background: var(--blue-main) !important; color: white !important; }
 
-    /* Contas */
-    .cartao-credito { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: 20px; padding: 18px; margin-bottom: 15px; }
-    .conta-bancaria-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
-
-    /* RELATÓRIOS (Foto 4) */
-    .filtro-periodo { display: flex; gap: 8px; margin-bottom: 15px; }
-    .btn-periodo { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid #cbd5e1; background: white; font-size: 12px; font-weight: 600; cursor: pointer; }
+    /* RELATÓRIOS */
+    .filtro-periodo { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; }
+    .btn-periodo { flex: 1; padding: 8px 6px; border-radius: 10px; border: 1px solid #cbd5e1; background: white; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; }
     .btn-periodo.active { background: var(--blue-main); color: white; border-color: var(--blue-main); }
+    .seletor-personalizado { display: none; background: #f1f5f9; padding: 12px; border-radius: 12px; margin-bottom: 15px; }
+    .seletor-personalizado.active { display: block; }
     .ranking-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
 
-    /* CONFIGURAÇÕES E PERFIL (Foto 1) */
+    /* CONFIGURAÇÕES */
     .item-config { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #f1f5f9; cursor: pointer; }
     .item-config:last-child { border-bottom: none; }
     .item-config-label { display: flex; align-items: center; gap: 12px; }
@@ -115,12 +109,11 @@
     
     input, select { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 15px; }
     .btn-salvar { background: var(--blue-main); color: white; border: none; width: 100%; padding: 15px; border-radius: 14px; font-size: 16px; font-weight: bold; cursor: pointer; }
-    .btn-acao-secundaria { background: #e2e8f0; color: #334155; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <!-- Tela de Bloqueio por PIN -->
+  <!-- Bloqueio por PIN -->
   <div id="lockscreen">
     <div style="font-size: 40px; margin-bottom: 10px;">🔒</div>
     <h3>Finanças Pessoais</h3>
@@ -150,10 +143,13 @@
   <!-- TELA 01: DASHBOARD -->
   <div id="screen-dashboard" class="screen-view active">
     <div class="top-header">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <h2>Olá, Bem-vindo 👋</h2>
-          <p style="font-size:13px; opacity:0.8;">Diagnóstico Financeiro</p>
+      <div class="header-saudacao">
+        <div class="perfil-box">
+          <img id="dashAvatar" class="avatar-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='white'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>" alt="Perfil">
+          <div>
+            <h2 id="dashSaudacaoNome">Olá, Usuário 👋</h2>
+            <p style="font-size:12px; opacity:0.85;" id="dashDataHoje">Data Atual</p>
+          </div>
         </div>
         <button onclick="mudarAba('screen-perfil', 4)" style="background:rgba(255,255,255,0.2); border:none; color:white; width:38px; height:38px; border-radius:50%; font-size:16px; cursor:pointer;">⚙️</button>
       </div>
@@ -178,7 +174,6 @@
       </div>
     </div>
 
-    <!-- 4 Atalhos Rápidos -->
     <div class="atalhos-grid">
       <button class="atalho-card" onclick="abrirModal('despesa')">
         <div class="atalho-icon">📝</div>
@@ -199,9 +194,13 @@
     </div>
 
     <div class="container">
+      <!-- Gráfico Anual de Janeiro a Dezembro -->
       <div class="card">
-        <div class="card-title"><span>Evolução Financeira</span></div>
-        <canvas id="graficoEvolucao" height="150"></canvas>
+        <div class="card-title">
+          <span>Evolução Anual (Jan - Dez)</span>
+          <span style="font-size:12px; color:var(--text-muted);" id="anoAtualLabel">2026</span>
+        </div>
+        <canvas id="graficoAnualMesAMes" height="170"></canvas>
       </div>
 
       <div class="card">
@@ -211,109 +210,91 @@
     </div>
   </div>
 
-  <!-- TELA 05: RELATÓRIOS & DIAGNÓSTICO (Foto 4) -->
-  <div id="screen-relatorios" class="screen-view">
-    <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
-      <h2>Relatórios Inteligentes 📈</h2>
-      <p style="opacity: 0.8; font-size: 13px;">Descubra para onde vai o seu dinheiro</p>
-    </div>
-
-    <div class="container" style="margin-top: 15px;">
-      <div class="filtro-periodo">
-        <button class="btn-periodo active" onclick="filtrarRelatorio('mes', this)">Mês</button>
-        <button class="btn-periodo" onclick="filtrarRelatorio('trimestre', this)">Trimestre</button>
-        <button class="btn-periodo" onclick="filtrarRelatorio('ano', this)">Ano</button>
-      </div>
-
-      <!-- Gráfico de Distribuição de Gastos -->
-      <div class="card">
-        <div class="card-title">Distribuição por Categoria</div>
-        <canvas id="graficoRoscaRelatorio" height="200"></canvas>
-      </div>
-
-      <!-- Maiores Gastos do Período -->
-      <div class="card">
-        <div class="card-title">Maiores Gastos do Período 🔍</div>
-        <div id="listaMaioresGastos"></div>
-      </div>
-
-      <!-- Card Economia do Mês -->
-      <div class="aviso-inteligente" style="background:#eff6ff; border-color:#bfdbfe; color:#1e40af;">
-        <span>💰</span>
-        <div>
-          <span>Economia Total Registrada:</span><br>
-          <strong style="font-size:18px;" id="relatorioEconomiaTotal">R$ 0,00</strong>
-        </div>
-      </div>
-
-      <button class="btn-salvar" style="background:#0f172a; margin-bottom:20px;" onclick="exportarRelatorioTexto()">
-        📄 Exportar Relatório em Texto
-      </button>
-    </div>
-  </div>
-
-  <!-- TELA 07: CALENDÁRIO FINANCEIRO -->
+  <!-- TELA 07: CALENDÁRIO COM NAVEGAÇÃO E GRÁFICOS -->
   <div id="screen-calendario" class="screen-view">
     <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
       <h2>Calendário Financeiro 📅</h2>
-      <p style="opacity: 0.8; font-size: 13px;">Vencimentos e entradas programadas</p>
+      <p style="opacity: 0.8; font-size: 13px;">Selecione o mês e acompanhe</p>
     </div>
     <div class="container" style="margin-top: 15px;">
       <div class="card">
-        <div class="calendario-header"><span id="calMesAnoLabel">Mês Vigente</span></div>
+        <!-- Navegador de Mês -->
+        <div class="nav-mes-calendario">
+          <button class="btn-mes" onclick="navegarMesCalendario(-1)">❮</button>
+          <strong id="calMesAnoLabel" style="font-size:15px;">Mês Vigente</strong>
+          <button class="btn-mes" onclick="navegarMesCalendario(1)">❯</button>
+        </div>
         <div class="calendario-grid" id="calGradeDias"></div>
       </div>
+
+      <!-- Gráfico Automático do Mês Selecionado -->
       <div class="card">
-        <div class="card-title"><span>Dia (<span id="labelDiaSelecionado">Hoje</span>)</span></div>
+        <div class="card-title">Balanço do Mês Selecionado</div>
+        <canvas id="graficoMesCalendario" height="130"></canvas>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span>Lançamentos do Dia (<span id="labelDiaSelecionado">Hoje</span>)</span></div>
         <div id="listaLancamentosDia"></div>
       </div>
     </div>
   </div>
 
-  <!-- TELA 08: CONTAS E CARTÕES -->
-  <div id="screen-contas" class="screen-view">
+  <!-- TELA 05: RELATÓRIOS COM FILTRO PERSONALIZADO -->
+  <div id="screen-relatorios" class="screen-view">
     <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
-      <h2>Contas e Cartões 💳</h2>
-      <p style="opacity: 0.8; font-size: 13px;">Onde está o seu dinheiro</p>
+      <h2>Relatórios Inteligentes 📈</h2>
+      <p style="opacity: 0.8; font-size: 13px;">Análise completa de comportamento</p>
     </div>
+
     <div class="container" style="margin-top: 15px;">
-      <div class="cartao-credito">
-        <div class="cartao-top">
-          <span style="font-weight:bold;">Cartão de Crédito Principal</span>
-          <span style="font-size:12px; opacity:0.8;">Fecha dia 15</span>
-        </div>
-        <div style="font-size:12px; opacity:0.8;">Fatura Atual Estimada</div>
-        <div style="font-size:26px; font-weight:bold; margin: 4px 0 10px;">R$ 890,00</div>
-        <div class="barra-container" style="background:rgba(255,255,255,0.2);">
-          <div class="barra-preenchimento" style="width: 35%; background: #38bdf8;"></div>
-        </div>
+      <div class="filtro-periodo">
+        <button class="btn-periodo active" onclick="filtrarRelatorio('mes', this)">Este Mês</button>
+        <button class="btn-periodo" onclick="filtrarRelatorio('trimestre', this)">Trimestre</button>
+        <button class="btn-periodo" onclick="filtrarRelatorio('ano', this)">Este Ano</button>
+        <button class="btn-periodo" onclick="ativarPeriodoPersonalizado(this)">Personalizado 📅</button>
       </div>
-      <div class="card">
-        <div class="card-title">
-          <span>Contas Cadastradas</span>
-          <button class="btn-acao-secundaria" onclick="adicionarNovaConta()">+ Nova Conta</button>
+
+      <!-- Seletor de Período Personalizado -->
+      <div class="seletor-personalizado" id="boxPersonalizado">
+        <div style="display:flex; gap:10px;">
+          <div style="flex:1;">
+            <label style="font-size:11px; font-weight:bold; color:#475569;">Data Inicial:</label>
+            <input type="date" id="relatorioDataInicio" style="margin-bottom:0;">
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:11px; font-weight:bold; color:#475569;">Data Final:</label>
+            <input type="date" id="relatorioDataFim" style="margin-bottom:0;">
+          </div>
         </div>
-        <div id="listaContasBancarias"></div>
+        <button class="btn-salvar" style="padding:10px; margin-top:10px; font-size:13px;" onclick="aplicarFiltroPersonalizado()">Filtrar Período</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Distribuição de Gastos</div>
+        <canvas id="graficoRoscaRelatorio" height="190"></canvas>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Maiores Gastos do Período 🔍</div>
+        <div id="listaMaioresGastos"></div>
+      </div>
+
+      <div class="card" style="background:#eff6ff; border: 1px solid #bfdbfe;">
+        <div style="font-size:12px; color:#1e40af; font-weight:bold;">ECONOMIA NO PERÍODO:</div>
+        <div style="font-size:24px; font-weight:bold; color:#1e40af; margin-top:4px;" id="relatorioEconomiaTotal">R$ 0,00</div>
       </div>
     </div>
   </div>
 
-  <!-- TELA 03: ORÇAMENTO DO MÊS -->
+  <!-- TELA 03: ORÇAMENTO -->
   <div id="screen-orcamento" class="screen-view">
     <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
       <h2>Orçamento do Mês 📊</h2>
-      <p style="opacity: 0.8; font-size: 13px;">Controle sem complicação</p>
     </div>
     <div class="container" style="margin-top: 15px;">
-      <div class="aviso-inteligente" id="avisoOrcamento">
-        <span>💡</span>
-        <span id="textoAvisoOrcamento">Você tem R$ 0,00 restantes</span>
-      </div>
       <div class="card">
-        <div class="card-title">
-          <span>Progresso Geral do Mês</span>
-          <span id="orcamentoPercentual">0%</span>
-        </div>
+        <div class="card-title"><span>Progresso Geral do Mês</span><span id="orcamentoPercentual">0%</span></div>
         <div class="barra-container">
           <div class="barra-preenchimento cor-azul" id="barraOrcamentoGeral" style="width: 0%;"></div>
         </div>
@@ -322,31 +303,37 @@
           <span>Limite: <strong id="orcamentoTotal">R$ 0,00</strong></span>
         </div>
       </div>
-      <div class="card">
-        <div class="card-title">
-          <span>Limites por Categoria</span>
-          <button class="btn-acao-secundaria" onclick="abrirModalDefinirOrcamento()">Configurar</button>
-        </div>
-        <div id="listaCategoriasOrcamento"></div>
-      </div>
     </div>
   </div>
 
-  <!-- TELA 09: PERFIL E CONFIGURAÇÕES (Foto 1) -->
+  <!-- TELA 09: PERFIL, FOTO E SEGURANÇA -->
   <div id="screen-perfil" class="screen-view">
     <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
       <h2>Perfil e Segurança ⚙️</h2>
-      <p style="opacity: 0.8; font-size: 13px;">Privacidade, backups e opções</p>
+      <p style="opacity: 0.8; font-size: 13px;">Seus dados e preferências</p>
     </div>
 
     <div class="container" style="margin-top: 15px;">
+      <!-- Card Editar Perfil -->
+      <div class="card">
+        <div class="card-title">Dados do Usuário</div>
+        <div style="display:flex; align-items:center; gap:15px; margin-bottom:12px;">
+          <img id="perfilPreviewAvatar" class="avatar-img" style="width:60px; height:60px;" src="" alt="Avatar">
+          <button class="btn-periodo" onclick="document.getElementById('inputFotoPerfil').click()">Alterar Foto</button>
+          <input type="file" id="inputFotoPerfil" accept="image/*" style="display:none;" onchange="processarFotoPerfil(event)">
+        </div>
+        <label style="font-size:12px; font-weight:bold; color:var(--text-muted);">Seu Nome:</label>
+        <input type="text" id="inputNomeUsuario" placeholder="Seu nome completo">
+        <button class="btn-salvar" style="padding:10px; font-size:14px;" onclick="salvarDadosPerfil()">Salvar Alterações</button>
+      </div>
+
       <div class="card">
         <div class="item-config" onclick="alterarPinSeguranca()">
           <div class="item-config-label">
             <div class="item-config-icon">🔒</div>
             <div>
               <strong>Segurança: Alterar PIN</strong>
-              <div style="font-size:12px; color:var(--text-muted);">Mudar senha de 4 dígitos</div>
+              <div style="font-size:12px; color:var(--text-muted);">Mudar senha numérica</div>
             </div>
           </div>
           <span>›</span>
@@ -356,31 +343,8 @@
           <div class="item-config-label">
             <div class="item-config-icon">📥</div>
             <div>
-              <strong>Backup: Baixar Arquivo</strong>
-              <div style="font-size:12px; color:var(--text-muted);">Salvar cópia completa (.json)</div>
-            </div>
-          </div>
-          <span>›</span>
-        </div>
-
-        <input type="file" id="inputArquivoBackup" style="display:none;" onchange="restaurarBackupCompleto(event)">
-        <div class="item-config" onclick="document.getElementById('inputArquivoBackup').click()">
-          <div class="item-config-label">
-            <div class="item-config-icon">📤</div>
-            <div>
-              <strong>Restaurar Dados</strong>
-              <div style="font-size:12px; color:var(--text-muted);">Carregar arquivo de backup</div>
-            </div>
-          </div>
-          <span>›</span>
-        </div>
-
-        <div class="item-config" onclick="limparTodosOsDados()">
-          <div class="item-config-label">
-            <div class="item-config-icon" style="background:#fee2e2;">🗑️</div>
-            <div>
-              <strong style="color:var(--red);">Zerar Aplicativo</strong>
-              <div style="font-size:12px; color:var(--text-muted);">Apagar tudo e recomeçar</div>
+              <strong>Backup Completo</strong>
+              <div style="font-size:12px; color:var(--text-muted);">Baixar arquivo .json</div>
             </div>
           </div>
           <span>›</span>
@@ -389,7 +353,7 @@
     </div>
   </div>
 
-  <!-- Modal Adicionar Lançamento Rápido -->
+  <!-- Modal Adicionar Lançamento -->
   <div class="modal" id="modalLancamento">
     <div class="modal-corpo">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -405,18 +369,6 @@
       <select id="campoCategoria"></select>
       <input type="date" id="campoData">
       <button class="btn-salvar" onclick="salvarLancamento()">Salvar</button>
-    </div>
-  </div>
-
-  <!-- Modal Definir Orçamento -->
-  <div class="modal" id="modalDefinirOrcamento">
-    <div class="modal-corpo">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3>Definir Limite Mensal</h3>
-        <span style="font-size:22px; cursor:pointer;" onclick="fecharModalOrcamento()">✕</span>
-      </div>
-      <input type="number" id="inputLimiteGeral" placeholder="Ex: 3500.00" step="10">
-      <button class="btn-salvar" onclick="salvarLimiteOrcamento()">Salvar Limite</button>
     </div>
   </div>
 
