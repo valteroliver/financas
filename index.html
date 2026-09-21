@@ -10,18 +10,19 @@
     :root {
       --blue-main: #2563eb;
       --blue-gradient: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
-      --bg: #f1f5f9;
+      --bg: #f8fafc;
       --card: #ffffff;
       --text: #0f172a;
       --text-muted: #64748b;
       --green: #10b981;
+      --orange: #f59e0b;
       --red: #ef4444;
       --shadow: 0 4px 15px -2px rgba(0, 0, 0, 0.05);
     }
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; }
     body { background-color: var(--bg); color: var(--text); padding-bottom: 90px; }
 
-    /* Tela de Bloqueio / PIN */
+    /* Tela de Bloqueio por PIN */
     #lockscreen {
       position: fixed; inset: 0; background: var(--blue-gradient); z-index: 1000;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -33,74 +34,82 @@
     .teclado-pin { display: grid; grid-template-columns: repeat(3, 75px); gap: 15px; }
     .btn-pin { width: 75px; height: 75px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    /* Topo do App (Header Azul das Fotos) */
-    .top-header { background: var(--blue-gradient); color: white; padding: 30px 20px 25px; border-radius: 0 0 28px 28px; }
-    .header-saudacao { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .header-saudacao h2 { font-size: 20px; }
-    .header-saudacao p { font-size: 13px; opacity: 0.8; }
-    .saldo-box { background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); padding: 18px; border-radius: 20px; margin-top: 10px; }
+    /* Topo Padrão */
+    .top-header { background: var(--blue-gradient); color: white; padding: 25px 20px 20px; border-radius: 0 0 28px 28px; }
+    .header-saudacao { display: flex; justify-content: space-between; align-items: center; }
+    .saldo-box { background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); padding: 18px; border-radius: 20px; margin-top: 15px; }
     .saldo-box .label { font-size: 13px; opacity: 0.85; }
-    .saldo-box .valor { font-size: 30px; font-weight: bold; margin-top: 4px; }
+    .saldo-box .valor { font-size: 28px; font-weight: bold; margin-top: 4px; }
 
-    /* Resumo Balanço Branco Flutuante */
+    /* Card Balanço */
     .balanco-card { background: var(--card); border-radius: 20px; margin: -20px 20px 15px; padding: 15px; box-shadow: var(--shadow); display: flex; justify-content: space-around; text-align: center; }
     .balanco-item span { font-size: 12px; color: var(--text-muted); display: block; }
     .balanco-item strong { font-size: 15px; display: block; margin-top: 4px; }
 
-    /* Atalhos Rápidos da Foto 8 */
+    /* Controle de Telas (Tabs) */
+    .screen-view { display: none; }
+    .screen-view.active { display: block; }
+
+    /* Atalhos Rápidos */
     .atalhos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 20px; }
     .atalho-card { background: var(--card); border-radius: 16px; padding: 14px 10px; text-align: center; box-shadow: var(--shadow); border: none; cursor: pointer; }
     .atalho-icon { font-size: 22px; margin-bottom: 6px; }
     .atalho-label { font-size: 12px; font-weight: 600; color: var(--text); }
 
-    /* Seções e Cards Gerais */
     .container { padding: 0 20px; }
     .card { background: var(--card); border-radius: 20px; padding: 18px; box-shadow: var(--shadow); margin-bottom: 15px; }
     .card-title { font-size: 15px; font-weight: bold; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 
-    /* Lista de Contas a Pagar / Lançamentos */
-    .item-financeiro { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
-    .item-financeiro:last-child { border-bottom: none; }
-    .item-info strong { font-size: 14px; display: block; }
-    .item-info span { font-size: 12px; color: var(--text-muted); }
+    /* Estilos das Barras de Progresso de Orçamento e Metas */
+    .barra-container { background: #e2e8f0; border-radius: 10px; height: 12px; width: 100%; overflow: hidden; margin: 8px 0; }
+    .barra-preenchimento { height: 100%; border-radius: 10px; transition: width 0.4s ease; }
+    .cor-verde { background: var(--green); }
+    .cor-laranja { background: var(--orange); }
+    .cor-vermelho { background: var(--red); }
+    .cor-azul { background: var(--blue-main); }
 
-    /* Menu Inferior Fixo */
+    /* Aviso Inteligente Verde da Foto 6 */
+    .aviso-inteligente { background: #dcfce7; border: 1px solid #bbf7d0; color: #166534; padding: 15px; border-radius: 16px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+
+    /* Cards de Metas da Foto 5 */
+    .meta-card { border-radius: 18px; padding: 16px; margin-bottom: 12px; color: white; }
+    .meta-card.verde { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .meta-card.azul { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+    .meta-card.roxo { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+
+    /* Menu Inferior */
     .menu-inferior { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 10px 0 12px; z-index: 50; }
     .menu-btn { border: none; background: transparent; font-size: 10px; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
     .menu-btn.active { color: var(--blue-main); font-weight: bold; }
     .menu-btn span.icon { font-size: 20px; }
 
-    /* Modal Rápido de Lançamento (Tela 02) */
+    /* Modais */
     .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: flex-end; justify-content: center; }
     .modal.active { display: flex; }
-    .modal-corpo { background: var(--card); border-radius: 28px 28px 0 0; width: 100%; max-width: 480px; padding: 24px; animation: slide 0.2s ease; }
-    @keyframes slide { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    
-    .tipo-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+    .modal-corpo { background: var(--card); border-radius: 28px 28px 0 0; width: 100%; max-width: 480px; padding: 24px; }
+    .tipo-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; }
     .tipo-btn { padding: 12px; border: 1px solid #e2e8f0; background: white; border-radius: 12px; font-weight: bold; font-size: 13px; cursor: pointer; }
     .tipo-btn.selected-despesa { background: #fee2e2; color: var(--red); border-color: var(--red); }
     .tipo-btn.selected-receita { background: #dcfce7; color: var(--green); border-color: var(--green); }
-    .tipo-btn.selected-transf { background: #dbeafe; color: var(--blue-main); border-color: var(--blue-main); }
     
     input, select { width: 100%; padding: 14px; margin-bottom: 10px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 15px; }
     .btn-salvar { background: var(--blue-main); color: white; border: none; width: 100%; padding: 15px; border-radius: 14px; font-size: 16px; font-weight: bold; cursor: pointer; }
+    .btn-acao-secundaria { background: #e2e8f0; color: #334155; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <!-- Tela de Acesso por Senha / PIN -->
+  <!-- Tela de Bloqueio por PIN -->
   <div id="lockscreen">
     <div style="font-size: 40px; margin-bottom: 10px;">🔒</div>
     <h3>Finanças Pessoais</h3>
     <p style="font-size: 13px; opacity: 0.8; margin-top: 4px;">Digite seu PIN de 4 dígitos</p>
-    
     <div class="pin-display">
       <div class="pin-dot" id="dot-0"></div>
       <div class="pin-dot" id="dot-1"></div>
       <div class="pin-dot" id="dot-2"></div>
       <div class="pin-dot" id="dot-3"></div>
     </div>
-
     <div class="teclado-pin">
       <button class="btn-pin" onclick="digitarPin('1')">1</button>
       <button class="btn-pin" onclick="digitarPin('2')">2</button>
@@ -117,8 +126,8 @@
     </div>
   </div>
 
-  <!-- Tela 01: Painel Principal (Dashboard) -->
-  <div id="app-view">
+  <!-- TELA 01: DASHBOARD -->
+  <div id="screen-dashboard" class="screen-view active">
     <div class="top-header">
       <div class="header-saudacao">
         <div>
@@ -147,42 +156,98 @@
       </div>
     </div>
 
-    <!-- 3 Atalhos Rápidos (Foto 8) -->
     <div class="atalhos-grid">
       <button class="atalho-card" onclick="abrirModal('despesa')">
         <div class="atalho-icon">📝</div>
         <div class="atalho-label">Registrar Gasto</div>
       </button>
-      <button class="atalho-card" onclick="alert('Em breve: Orçamento Inteligente')">
+      <button class="atalho-card" onclick="mudarAba('screen-orcamento', 1)">
         <div class="atalho-icon">📊</div>
         <div class="atalho-label">Ver Orçamento</div>
       </button>
-      <button class="atalho-card" onclick="alert('Em breve: Calendário e Vencimentos')">
-        <div class="atalho-icon">📅</div>
-        <div class="atalho-label">Próximas Contas</div>
+      <button class="atalho-card" onclick="mudarAba('screen-metas', 3)">
+        <div class="atalho-icon">🎯</div>
+        <div class="atalho-label">Ver Metas</div>
       </button>
     </div>
 
     <div class="container">
-      <!-- Gráfico de Evolução -->
       <div class="card">
-        <div class="card-title">
-          <span>Evolução Recente</span>
-        </div>
+        <div class="card-title"><span>Evolução Financeira</span></div>
         <canvas id="graficoEvolucao" height="150"></canvas>
       </div>
 
-      <!-- Alerta Contas / Lançamentos Recentes -->
       <div class="card">
-        <div class="card-title">
-          <span>Últimas Movimentações</span>
-        </div>
+        <div class="card-title"><span>Últimas Movimentações</span></div>
         <div id="listaUltimas"></div>
       </div>
     </div>
   </div>
 
-  <!-- Tela 02: Modal Adicionar Lançamento Rápido -->
+  <!-- TELA 03: ORÇAMENTO DO MÊS (Foto 6) -->
+  <div id="screen-orcamento" class="screen-view">
+    <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
+      <h2>Orçamento do Mês 📊</h2>
+      <p style="opacity: 0.8; font-size: 13px;">Controle sem complicação</p>
+    </div>
+
+    <div class="container" style="margin-top: 15px;">
+      <!-- Aviso Inteligente -->
+      <div class="aviso-inteligente" id="avisoOrcamento">
+        <span>💡</span>
+        <span id="textoAvisoOrcamento">Você tem R$ 0,00 restantes para gastar</span>
+      </div>
+
+      <!-- Resumo do Orçamento Geral -->
+      <div class="card">
+        <div class="card-title">
+          <span>Progresso Geral do Mês</span>
+          <span id="orcamentoPercentual">0%</span>
+        </div>
+        <div class="barra-container">
+          <div class="barra-preenchimento cor-azul" id="barraOrcamentoGeral" style="width: 0%;"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+          <span>Gasto: <strong id="orcamentoGasto" style="color: var(--red);">R$ 0,00</strong></span>
+          <span>Limite: <strong id="orcamentoTotal" style="color: var(--text);">R$ 0,00</strong></span>
+        </div>
+      </div>
+
+      <!-- Limite por Categorias -->
+      <div class="card">
+        <div class="card-title">
+          <span>Limites por Categoria</span>
+          <button class="btn-acao-secundaria" onclick="abrirModalDefinirOrcamento()">Configurar</button>
+        </div>
+        <div id="listaCategoriasOrcamento"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 04: METAS E OBJETIVOS (Foto 5) -->
+  <div id="screen-metas" class="screen-view">
+    <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
+      <h2>Minhas Metas 🎯</h2>
+      <p style="opacity: 0.8; font-size: 13px;">Foco nos seus objetivos</p>
+    </div>
+
+    <div class="container" style="margin-top: 15px;">
+      <div id="listaCardsMetas"></div>
+
+      <button class="btn-salvar" style="background: white; color: var(--blue-main); border: 2px dashed var(--blue-main); margin-bottom: 20px;" onclick="abrirModalNovaMeta()">
+        + Criar Nova Meta
+      </button>
+
+      <div class="card" id="cardDicaEconomia">
+        <div class="card-title"><span>💡 Estimativa Inteligente</span></div>
+        <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5;" id="textoEstimativaMetas">
+          Cadastre suas metas para ver quanto guardar por mês e o tempo previsto para alcançá-las.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Adicionar Lançamento Rápido -->
   <div class="modal" id="modalLancamento">
     <div class="modal-corpo">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -193,25 +258,51 @@
       <div class="tipo-tabs">
         <button class="tipo-btn selected-despesa" id="btn-tipo-despesa" onclick="setTipo('despesa')">Despesa</button>
         <button class="tipo-btn" id="btn-tipo-receita" onclick="setTipo('receita')">Receita</button>
-        <button class="tipo-btn" id="btn-tipo-transf" onclick="setTipo('transf')">Transf.</button>
       </div>
 
-      <input type="text" id="campoDescricao" placeholder="Descrição (ex: Almoço, Salário)">
-      <input type="number" id="campoValor" placeholder="R$ 0,00" step="0.01">
+      <input type="text" id="campoDescricao" placeholder="Descrição (ex: Supermercado)">
+      <input type="number" id="campoValor" placeholder="Valor (R$)" step="0.01">
       <select id="campoCategoria"></select>
       <input type="date" id="campoData">
 
-      <button class="btn-salvar" onclick="salvarLancamento()">Salvar Lançamento</button>
+      <button class="btn-salvar" onclick="salvarLancamento()">Salvar</button>
     </div>
   </div>
 
-  <!-- Menu Inferior de 5 Ícones -->
+  <!-- Modal Definir Orçamento Mensal -->
+  <div class="modal" id="modalDefinirOrcamento">
+    <div class="modal-corpo">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3>Definir Limite Mensal</h3>
+        <span style="font-size:22px; cursor:pointer;" onclick="fecharModalOrcamento()">✕</span>
+      </div>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 10px;">Quanto você planeja gastar no total este mês?</p>
+      <input type="number" id="inputLimiteGeral" placeholder="Ex: 3500.00" step="10">
+      <button class="btn-salvar" onclick="salvarLimiteOrcamento()">Salvar Limite</button>
+    </div>
+  </div>
+
+  <!-- Modal Nova Meta -->
+  <div class="modal" id="modalNovaMeta">
+    <div class="modal-corpo">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h3>Nova Meta Financeira</h3>
+        <span style="font-size:22px; cursor:pointer;" onclick="fecharModalMeta()">✕</span>
+      </div>
+      <input type="text" id="inputMetaTitulo" placeholder="Objetivo (ex: Viagem, Carro, Reserva)">
+      <input type="number" id="inputMetaAlvo" placeholder="Valor Total da Meta (R$)">
+      <input type="number" id="inputMetaAtual" placeholder="Quanto já tem guardado hoje? (R$)">
+      <button class="btn-salvar" onclick="salvarNovaMeta()">Salvar Meta</button>
+    </div>
+  </div>
+
+  <!-- Menu Inferior -->
   <div class="menu-inferior">
-    <button class="menu-btn active">
+    <button class="menu-btn active" onclick="mudarAba('screen-dashboard', 0)">
       <span class="icon">🏠</span>
       <span>Início</span>
     </button>
-    <button class="menu-btn" onclick="alert('Em construção: Orçamentos')">
+    <button class="menu-btn" onclick="mudarAba('screen-orcamento', 1)">
       <span class="icon">📊</span>
       <span>Orçamento</span>
     </button>
@@ -219,7 +310,7 @@
       <span class="icon" style="font-size:26px;">➕</span>
       <span>Novo</span>
     </button>
-    <button class="menu-btn" onclick="alert('Em construção: Metas e Dívidas')">
+    <button class="menu-btn" onclick="mudarAba('screen-metas', 3)">
       <span class="icon">🎯</span>
       <span>Metas</span>
     </button>
