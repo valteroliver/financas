@@ -1,4 +1,4 @@
-// Armazenamento Local
+// Armazenamento Local Consolidado
 let transacoes = JSON.parse(localStorage.getItem('fin_transacoes_v3')) || [];
 let orcamentoTotalConfig = parseFloat(localStorage.getItem('fin_orcamento_limite')) || 4000;
 let dividas = JSON.parse(localStorage.getItem('fin_dividas_v3')) || [];
@@ -12,6 +12,7 @@ let pinCadastrado = localStorage.getItem('fin_pin') || '1234';
 let pinDigitado = '';
 let tipoSelecionado = 'despesa';
 let graficoInstance = null;
+let chartRoscaRelatorio = null;
 let dataFiltroCalendario = new Date().toISOString().slice(0, 10);
 
 const CATEGORIAS = {
@@ -30,14 +31,14 @@ function mudarAba(screenId, indexBotao) {
   document.getElementById(screenId).classList.add('active');
   window.scrollTo(0, 0);
 
+  if (screenId === 'screen-relatorios') carregarRelatorios();
   if (screenId === 'screen-calendario') carregarCalendario();
   if (screenId === 'screen-contas') carregarContas();
   if (screenId === 'screen-orcamento') carregarTelaOrcamento();
-  if (screenId === 'screen-dividas') carregarTelaDividas();
   if (screenId === 'screen-dashboard') inicializarDashboard();
 }
 
-// PIN e Bloqueio
+// PIN e Autenticação
 function digitarPin(num) {
   if (pinDigitado.length < 4) {
     pinDigitado += num;
@@ -65,7 +66,7 @@ function verificarPin() {
     limparPin();
     inicializarDashboard();
   } else {
-    alert('PIN incorreto! Padrão: 1234');
+    alert('PIN incorreto!');
     limparPin();
   }
 }
@@ -75,7 +76,7 @@ function autenticarBiometria() {
   inicializarDashboard();
 }
 
-// Modais Lançamentos
+// Lançamentos Rápidos
 function setTipo(tipo) {
   tipoSelecionado = tipo;
   document.getElementById('btn-tipo-despesa').className = 'tipo-btn' + (tipo === 'despesa' ? ' selected-despesa' : '');
@@ -162,7 +163,69 @@ function inicializarDashboard() {
   });
 }
 
-// TELA 07: CALENDÁRIO FINANCEIRO (Fotos 2 e 7)
+// TELA 05: RELATÓRIOS INTELIGENTES (Foto 4)
+function carregarRelatorios() {
+  let despTotal = 0;
+  let recTotal = 0;
+  const gastosPorCat = {};
+
+  transacoes.forEach(t => {
+    if (t.tipo === 'despesa') {
+      despTotal += t.valor;
+      gastosPorCat[t.cat] = (gastosPorCat[t.cat] || 0) + t.valor;
+    } else if (t.tipo === 'receita') {
+      recTotal += t.valor;
+    }
+  });
+
+  document.getElementById('relatorioEconomiaTotal').innerText = `R$ ${(recTotal - despTotal).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+
+  // Gráfico de Rosca
+  const ctx = document.getElementById('graficoRoscaRelatorio').getContext('2d');
+  const labels = Object.keys(gastosPorCat);
+  const dataValues = Object.values(gastosPorCat);
+
+  if (chartRoscaRelatorio) chartRoscaRelatorio.destroy();
+  chartRoscaRelatorio = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: labels.length ? labels : ['Sem despesas'],
+      datasets: [{
+        data: dataValues.length ? dataValues : [1],
+        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#64748b']
+      }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // Maiores Gastos
+  const despesasOrdenadas = transacoes.filter(t => t.tipo === 'despesa').sort((a, b) => b.valor - a.valor).slice(0, 3);
+  const containerMaiores = document.getElementById('listaMaioresGastos');
+  containerMaiores.innerHTML = despesasOrdenadas.length === 0 ? '<p style="color:#94a3b8; font-size:13px; text-align:center;">Nenhum gasto no período.</p>' :
+    despesasOrdenadas.map((d, i) => `
+      <div class="ranking-item">
+        <span><strong>#${i + 1}</strong> ${d.desc} (${d.cat})</span>
+        <strong style="color:var(--red);">R$ ${d.valor.toFixed(2)}</strong>
+      </div>
+    `).join('');
+}
+
+function filtrarRelatorio(tipo, el) {
+  document.querySelectorAll('.btn-periodo').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  carregarRelatorios();
+}
+
+function exportarRelatorioTexto() {
+  let texto = "=== RELATÓRIO FINANCEIRO PESSOAL ===\n\n";
+  transacoes.forEach(t => {
+    texto += `${t.data} - ${t.desc} [${t.cat}]: R$ ${t.valor.toFixed(2)} (${t.tipo.toUpperCase()})\n`;
+  });
+  navigator.clipboard.writeText(texto);
+  alert('Relatório copiado para a Área de Transferência! Você pode colar no WhatsApp ou no Bloco de Notas.');
+}
+
+// TELA 07: CALENDÁRIO
 function carregarCalendario() {
   const grade = document.getElementById('calGradeDias');
   const hoje = new Date();
@@ -198,7 +261,6 @@ function carregarCalendario() {
   }
 
   mostrarLancamentosDoDia(dataFiltroCalendario);
-  mostrarProximos7Dias();
 }
 
 function selecionarDiaCalendario(data) {
@@ -211,10 +273,8 @@ function mostrarLancamentosDoDia(data) {
   const itens = transacoes.filter(t => t.data === data);
   const lista = document.getElementById('listaLancamentosDia');
 
-  if (itens.length === 0) {
-    lista.innerHTML = '<p style="color:#94a3b8; font-size:13px; text-align:center; padding:10px;">Nada previsto para este dia.</p>';
-  } else {
-    lista.innerHTML = itens.map(t => `
+  lista.innerHTML = itens.length === 0 ? '<p style="color:#94a3b8; font-size:13px; text-align:center; padding:10px;">Nada neste dia.</p>' :
+    itens.map(t => `
       <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f1f5f9;">
         <div><strong>${t.desc}</strong><br><span style="font-size:11px; color:#64748b;">${t.cat}</span></div>
         <span style="font-weight:bold; color:${t.tipo === 'receita' ? 'var(--green)' : 'var(--red)'};">
@@ -222,22 +282,9 @@ function mostrarLancamentosDoDia(data) {
         </span>
       </div>
     `).join('');
-  }
 }
 
-function mostrarProximos7Dias() {
-  const container = document.getElementById('listaProximos7Dias');
-  const proximos = transacoes.slice(0, 4); // Exibe os compromissos mais recentes/próximos
-  container.innerHTML = proximos.length === 0 ? '<p style="color:#94a3b8; font-size:13px;">Sem contas nos próximos dias.</p>' :
-    proximos.map(t => `
-      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f1f5f9; font-size:13px;">
-        <span>${t.desc} (${t.data.split('-').reverse().slice(0, 2).join('/')})</span>
-        <strong style="color:var(--red);">R$ ${t.valor.toFixed(2)}</strong>
-      </div>
-    `).join('');
-}
-
-// TELA 08: CONTAS E CARTÕES
+// TELA 08: CONTAS
 function carregarContas() {
   const container = document.getElementById('listaContasBancarias');
   container.innerHTML = contasBancarias.map((c, idx) => `
@@ -258,17 +305,16 @@ function carregarContas() {
 }
 
 function adicionarNovaConta() {
-  const nome = prompt('Nome da nova conta ou banco (ex: Inter, Carteira):');
-  const saldo = parseFloat(prompt('Saldo inicial (R$):'));
+  const nome = prompt('Nome da nova conta:');
+  const saldo = parseFloat(prompt('Saldo inicial:'));
   if (nome && !isNaN(saldo)) {
     contasBancarias.push({ id: Date.now(), nome, saldo, icone: '🏦' });
     localStorage.setItem('fin_contas_bancarias', JSON.stringify(contasBancarias));
     carregarContas();
   }
 }
-
 function ajustarSaldoConta(idx) {
-  const novo = parseFloat(prompt(`Novo saldo para "${contasBancarias[idx].nome}":`, contasBancarias[idx].saldo));
+  const novo = parseFloat(prompt('Novo saldo:', contasBancarias[idx].saldo));
   if (!isNaN(novo)) {
     contasBancarias[idx].saldo = novo;
     localStorage.setItem('fin_contas_bancarias', JSON.stringify(contasBancarias));
@@ -276,7 +322,7 @@ function ajustarSaldoConta(idx) {
   }
 }
 
-// TELA 03: Orçamento
+// TELA 03: ORÇAMENTO
 function carregarTelaOrcamento() {
   let totalGasto = 0;
   const gastosPorCat = {};
@@ -332,46 +378,55 @@ function salvarLimiteOrcamento() {
   }
 }
 
-// TELA 06: Dívidas
-function carregarTelaDividas() {
-  let totalDevido = 0;
-  dividas.forEach(d => totalDevido += d.atual);
-  document.getElementById('dividaTotalAberto').innerText = `R$ ${totalDevido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-  
-  const container = document.getElementById('listaDividasCadastradas');
-  container.innerHTML = dividas.length === 0 ? '<p style="text-align:center; color:#94a3b8; font-size:13px; padding:20px;">Nenhuma pendência cadastrada!</p>' :
-    dividas.map(d => `
-      <div class="divida-item">
-        <strong>${d.credor}</strong>
-        <div style="font-size:18px; font-weight:bold; color:var(--red); margin:5px 0;">R$ ${d.atual.toFixed(2)}</div>
-        <button class="btn-acao-secundaria" style="background:#dbeafe; color:var(--blue-main);" onclick="transformarEmAcordo(${d.id})">🤝 Transformar em Acordo</button>
-      </div>
-    `).join('');
+// TELA 09: PERFIL, SEGURANÇA E BACKUP (Foto 1)
+function alterarPinSeguranca() {
+  const novoPin = prompt('Digite seu novo PIN numérico de 4 dígitos:');
+  if (novoPin && novoPin.length === 4 && !isNaN(novoPin)) {
+    pinCadastrado = novoPin;
+    localStorage.setItem('fin_pin', pinCadastrado);
+    alert('PIN alterado com sucesso!');
+  } else {
+    alert('O PIN deve conter exatamente 4 números!');
+  }
 }
 
-function abrirModalNovaDivida() { document.getElementById('modalNovaDivida').classList.add('active'); }
-function fecharModalDivida() { document.getElementById('modalNovaDivida').classList.remove('active'); }
-function salvarNovaDivida() {
-  const credor = document.getElementById('inputDividaCredor').value;
-  const original = parseFloat(document.getElementById('inputDividaOriginal').value);
-  const atual = parseFloat(document.getElementById('inputDividaAtual').value);
-  if (!credor || isNaN(atual)) return alert('Preencha os dados!');
-  dividas.push({ id: Date.now(), credor, original: original || atual, atual, juros: '10%' });
-  localStorage.setItem('fin_dividas_v3', JSON.stringify(dividas));
-  fecharModalDivida();
-  carregarTelaDividas();
+function exportarBackupCompleto() {
+  const backup = { transacoes, orcamentoTotalConfig, dividas, contasBancarias };
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `backup_financas_completo_${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
 }
-function transformarEmAcordo(id) {
-  const d = dividas.find(item => item.id === id);
-  if (!d) return;
-  const val = parseFloat(prompt(`Valor da parcela negociada para "${d.credor}": (R$)`));
-  if (val > 0) {
-    transacoes.unshift({ id: Date.now(), desc: `Acordo: ${d.credor}`, valor: val, tipo: 'despesa', cat: 'Acordo Dívida 🛡️', data: new Date().toISOString().slice(0, 10) });
-    dividas = dividas.filter(item => item.id !== id);
-    localStorage.setItem('fin_transacoes_v3', JSON.stringify(transacoes));
-    localStorage.setItem('fin_dividas_v3', JSON.stringify(dividas));
-    alert('Acordo firmado e integrado ao seu orçamento!');
-    carregarTelaDividas();
+
+function restaurarBackupCompleto(event) {
+  const reader = new FileReader();
+  reader.onload = function() {
+    try {
+      const data = JSON.parse(reader.result);
+      if (data.transacoes) transacoes = data.transacoes;
+      if (data.orcamentoTotalConfig) orcamentoTotalConfig = data.orcamentoTotalConfig;
+      if (data.dividas) dividas = data.dividas;
+      if (data.contasBancarias) contasBancarias = data.contasBancarias;
+
+      localStorage.setItem('fin_transacoes_v3', JSON.stringify(transacoes));
+      localStorage.setItem('fin_orcamento_limite', orcamentoTotalConfig);
+      localStorage.setItem('fin_dividas_v3', JSON.stringify(dividas));
+      localStorage.setItem('fin_contas_bancarias', JSON.stringify(contasBancarias));
+
+      alert('Backup restaurado com sucesso!');
+      location.reload();
+    } catch (e) {
+      alert('Arquivo de backup inválido!');
+    }
+  };
+  reader.readAsText(event.target.files[0]);
+}
+
+function limparTodosOsDados() {
+  if (confirm('Tem certeza? Isso apagará todos os seus lançamentos e configurações!')) {
+    localStorage.clear();
+    location.reload();
   }
 }
 

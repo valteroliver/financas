@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Finanças Pessoais</title>
+  <title>Finanças Pessoais Pro</title>
   <link rel="manifest" href="manifest.json">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -69,17 +69,11 @@
 
     .aviso-inteligente { background: #dcfce7; border: 1px solid #bbf7d0; color: #166534; padding: 15px; border-radius: 16px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
 
-    /* Cards de Metas */
-    .meta-card { border-radius: 18px; padding: 16px; margin-bottom: 12px; color: white; }
-    .meta-card.verde { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-    .meta-card.azul { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
-    .meta-card.roxo { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
-
     /* Dívidas */
     .card-total-divida { background: #fff1f2; border: 1px solid #fecdd3; border-radius: 20px; padding: 18px; margin-bottom: 15px; }
     .divida-item { background: var(--card); border-radius: 18px; padding: 16px; box-shadow: var(--shadow); margin-bottom: 12px; border-left: 5px solid var(--red); }
 
-    /* CALENDÁRIO FINANCEIRO (Fotos 2 e 7) */
+    /* Calendário */
     .calendario-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: bold; }
     .calendario-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
     .cal-dia-semana { font-size: 11px; color: var(--text-muted); font-weight: bold; padding-bottom: 4px; }
@@ -88,10 +82,21 @@
     .cal-dia.tem-receita::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
     .cal-dia.selecionado { background: var(--blue-main) !important; color: white !important; }
 
-    /* CONTAS E CARTÕES (Foto 1 - Módulo 2) */
+    /* Contas */
     .cartao-credito { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: 20px; padding: 18px; margin-bottom: 15px; }
-    .cartao-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
     .conta-bancaria-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+
+    /* RELATÓRIOS (Foto 4) */
+    .filtro-periodo { display: flex; gap: 8px; margin-bottom: 15px; }
+    .btn-periodo { flex: 1; padding: 8px; border-radius: 10px; border: 1px solid #cbd5e1; background: white; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .btn-periodo.active { background: var(--blue-main); color: white; border-color: var(--blue-main); }
+    .ranking-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+
+    /* CONFIGURAÇÕES E PERFIL (Foto 1) */
+    .item-config { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #f1f5f9; cursor: pointer; }
+    .item-config:last-child { border-bottom: none; }
+    .item-config-label { display: flex; align-items: center; gap: 12px; }
+    .item-config-icon { width: 36px; height: 36px; border-radius: 10px; background: #e0f2fe; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 
     /* Menu Inferior */
     .menu-inferior { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 10px 0 12px; z-index: 50; }
@@ -148,8 +153,9 @@
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
           <h2>Olá, Bem-vindo 👋</h2>
-          <p style="font-size:13px; opacity:0.8;">Visão Geral do Mês</p>
+          <p style="font-size:13px; opacity:0.8;">Diagnóstico Financeiro</p>
         </div>
+        <button onclick="mudarAba('screen-perfil', 4)" style="background:rgba(255,255,255,0.2); border:none; color:white; width:38px; height:38px; border-radius:50%; font-size:16px; cursor:pointer;">⚙️</button>
       </div>
       <div class="saldo-box">
         <div class="label">Saldo Consolidado</div>
@@ -180,15 +186,15 @@
       </button>
       <button class="atalho-card" onclick="mudarAba('screen-calendario', 1)">
         <div class="atalho-icon">📅</div>
-        <div class="atalho-label">Calendário</div>
+        <div class="atalho-label">Agenda</div>
       </button>
-      <button class="atalho-card" onclick="mudarAba('screen-contas', 3)">
-        <div class="atalho-icon">💳</div>
-        <div class="atalho-label">Contas</div>
+      <button class="atalho-card" onclick="mudarAba('screen-relatorios', 3)">
+        <div class="atalho-icon">📈</div>
+        <div class="atalho-label">Relatórios</div>
       </button>
-      <button class="atalho-card" onclick="mudarAba('screen-dividas', 4)">
-        <div class="atalho-icon">🛡️</div>
-        <div class="atalho-label">Dívidas</div>
+      <button class="atalho-card" onclick="mudarAba('screen-orcamento', 0)">
+        <div class="atalho-icon">📊</div>
+        <div class="atalho-label">Orçamento</div>
       </button>
     </div>
 
@@ -205,67 +211,83 @@
     </div>
   </div>
 
-  <!-- TELA 07: CALENDÁRIO FINANCEIRO (Fotos 2 e 7) -->
+  <!-- TELA 05: RELATÓRIOS & DIAGNÓSTICO (Foto 4) -->
+  <div id="screen-relatorios" class="screen-view">
+    <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
+      <h2>Relatórios Inteligentes 📈</h2>
+      <p style="opacity: 0.8; font-size: 13px;">Descubra para onde vai o seu dinheiro</p>
+    </div>
+
+    <div class="container" style="margin-top: 15px;">
+      <div class="filtro-periodo">
+        <button class="btn-periodo active" onclick="filtrarRelatorio('mes', this)">Mês</button>
+        <button class="btn-periodo" onclick="filtrarRelatorio('trimestre', this)">Trimestre</button>
+        <button class="btn-periodo" onclick="filtrarRelatorio('ano', this)">Ano</button>
+      </div>
+
+      <!-- Gráfico de Distribuição de Gastos -->
+      <div class="card">
+        <div class="card-title">Distribuição por Categoria</div>
+        <canvas id="graficoRoscaRelatorio" height="200"></canvas>
+      </div>
+
+      <!-- Maiores Gastos do Período -->
+      <div class="card">
+        <div class="card-title">Maiores Gastos do Período 🔍</div>
+        <div id="listaMaioresGastos"></div>
+      </div>
+
+      <!-- Card Economia do Mês -->
+      <div class="aviso-inteligente" style="background:#eff6ff; border-color:#bfdbfe; color:#1e40af;">
+        <span>💰</span>
+        <div>
+          <span>Economia Total Registrada:</span><br>
+          <strong style="font-size:18px;" id="relatorioEconomiaTotal">R$ 0,00</strong>
+        </div>
+      </div>
+
+      <button class="btn-salvar" style="background:#0f172a; margin-bottom:20px;" onclick="exportarRelatorioTexto()">
+        📄 Exportar Relatório em Texto
+      </button>
+    </div>
+  </div>
+
+  <!-- TELA 07: CALENDÁRIO FINANCEIRO -->
   <div id="screen-calendario" class="screen-view">
     <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
       <h2>Calendário Financeiro 📅</h2>
       <p style="opacity: 0.8; font-size: 13px;">Vencimentos e entradas programadas</p>
     </div>
-
     <div class="container" style="margin-top: 15px;">
-      <!-- Calendário Mensal -->
       <div class="card">
-        <div class="calendario-header">
-          <span id="calMesAnoLabel">Mês Vigente</span>
-        </div>
+        <div class="calendario-header"><span id="calMesAnoLabel">Mês Vigente</span></div>
         <div class="calendario-grid" id="calGradeDias"></div>
       </div>
-
-      <!-- Lançamentos do Dia Selecionado -->
       <div class="card">
-        <div class="card-title">
-          <span>Dia Selecionado (<span id="labelDiaSelecionado">Hoje</span>)</span>
-        </div>
+        <div class="card-title"><span>Dia (<span id="labelDiaSelecionado">Hoje</span>)</span></div>
         <div id="listaLancamentosDia"></div>
-      </div>
-
-      <!-- Alerta dos Próximos 7 Dias -->
-      <div class="card">
-        <div class="card-title">
-          <span>Próximos 7 Dias 🔔</span>
-        </div>
-        <div id="listaProximos7Dias"></div>
       </div>
     </div>
   </div>
 
-  <!-- TELA 08: CONTAS E CARTÕES (Foto 1 - Módulo 2) -->
+  <!-- TELA 08: CONTAS E CARTÕES -->
   <div id="screen-contas" class="screen-view">
     <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
       <h2>Contas e Cartões 💳</h2>
       <p style="opacity: 0.8; font-size: 13px;">Onde está o seu dinheiro</p>
     </div>
-
     <div class="container" style="margin-top: 15px;">
-      <!-- Cartão de Crédito com Barra de Limite -->
       <div class="cartao-credito">
         <div class="cartao-top">
-          <span style="font-weight:bold; font-size:16px;">Cartão Principal</span>
+          <span style="font-weight:bold;">Cartão de Crédito Principal</span>
           <span style="font-size:12px; opacity:0.8;">Fecha dia 15</span>
         </div>
-        <div style="font-size:12px; opacity:0.8;">Fatura Atual</div>
-        <div style="font-size:26px; font-weight:bold; margin: 4px 0 10px;" id="cartaoFaturaAtual">R$ 890,00</div>
-        
+        <div style="font-size:12px; opacity:0.8;">Fatura Atual Estimada</div>
+        <div style="font-size:26px; font-weight:bold; margin: 4px 0 10px;">R$ 890,00</div>
         <div class="barra-container" style="background:rgba(255,255,255,0.2);">
-          <div class="barra-preenchimento" id="barraLimiteCartao" style="width: 30%; background: #38bdf8;"></div>
-        </div>
-        <div style="display:flex; justify-content:space-between; font-size:11px; opacity:0.9; margin-top:5px;">
-          <span>Limite Total: R$ 3.000,00</span>
-          <span>Disponível: R$ 2.110,00</span>
+          <div class="barra-preenchimento" style="width: 35%; background: #38bdf8;"></div>
         </div>
       </div>
-
-      <!-- Contas Bancárias Cadastradas -->
       <div class="card">
         <div class="card-title">
           <span>Contas Cadastradas</span>
@@ -310,27 +332,60 @@
     </div>
   </div>
 
-  <!-- TELA 06: DÍVIDAS E QUITAÇÃO -->
-  <div id="screen-dividas" class="screen-view">
-    <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);">
-      <h2>Dívidas e Quitação 🛡️</h2>
-      <p style="opacity: 0.8; font-size: 13px;">Estratégia para zerar pendências</p>
+  <!-- TELA 09: PERFIL E CONFIGURAÇÕES (Foto 1) -->
+  <div id="screen-perfil" class="screen-view">
+    <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
+      <h2>Perfil e Segurança ⚙️</h2>
+      <p style="opacity: 0.8; font-size: 13px;">Privacidade, backups e opções</p>
     </div>
+
     <div class="container" style="margin-top: 15px;">
-      <div class="card-total-divida">
-        <span style="font-size: 12px; color: var(--text-muted); font-weight: bold;">TOTAL EM ABERTO</span>
-        <div class="valor-grande" id="dividaTotalAberto">R$ 0,00</div>
-        <span style="font-size: 12px; color: #991b1b;" id="dividaEstimativaJuros">Juros: R$ 0,00</span>
+      <div class="card">
+        <div class="item-config" onclick="alterarPinSeguranca()">
+          <div class="item-config-label">
+            <div class="item-config-icon">🔒</div>
+            <div>
+              <strong>Segurança: Alterar PIN</strong>
+              <div style="font-size:12px; color:var(--text-muted);">Mudar senha de 4 dígitos</div>
+            </div>
+          </div>
+          <span>›</span>
+        </div>
+
+        <div class="item-config" onclick="exportarBackupCompleto()">
+          <div class="item-config-label">
+            <div class="item-config-icon">📥</div>
+            <div>
+              <strong>Backup: Baixar Arquivo</strong>
+              <div style="font-size:12px; color:var(--text-muted);">Salvar cópia completa (.json)</div>
+            </div>
+          </div>
+          <span>›</span>
+        </div>
+
+        <input type="file" id="inputArquivoBackup" style="display:none;" onchange="restaurarBackupCompleto(event)">
+        <div class="item-config" onclick="document.getElementById('inputArquivoBackup').click()">
+          <div class="item-config-label">
+            <div class="item-config-icon">📤</div>
+            <div>
+              <strong>Restaurar Dados</strong>
+              <div style="font-size:12px; color:var(--text-muted);">Carregar arquivo de backup</div>
+            </div>
+          </div>
+          <span>›</span>
+        </div>
+
+        <div class="item-config" onclick="limparTodosOsDados()">
+          <div class="item-config-label">
+            <div class="item-config-icon" style="background:#fee2e2;">🗑️</div>
+            <div>
+              <strong style="color:var(--red);">Zerar Aplicativo</strong>
+              <div style="font-size:12px; color:var(--text-muted);">Apagar tudo e recomeçar</div>
+            </div>
+          </div>
+          <span>›</span>
+        </div>
       </div>
-      <div class="card" style="background: #fefce8; border: 1px solid #fef08a;">
-        <div class="card-title" style="color: #854d0e;">⚡ Plano Rápido de Quitação</div>
-        <p style="font-size: 13px; color: #713f12;" id="textoPlanoQuitacao">Destine R$ 300/mês para quitar.</p>
-      </div>
-      <div class="card-title" style="margin: 15px 0 10px 5px;">
-        <span>Pendências</span>
-        <button class="btn-acao-secundaria" onclick="abrirModalNovaDivida()">+ Nova Dívida</button>
-      </div>
-      <div id="listaDividasCadastradas"></div>
     </div>
   </div>
 
@@ -353,7 +408,7 @@
     </div>
   </div>
 
-  <!-- Modal Definir Orçamento Mensal -->
+  <!-- Modal Definir Orçamento -->
   <div class="modal" id="modalDefinirOrcamento">
     <div class="modal-corpo">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -362,21 +417,6 @@
       </div>
       <input type="number" id="inputLimiteGeral" placeholder="Ex: 3500.00" step="10">
       <button class="btn-salvar" onclick="salvarLimiteOrcamento()">Salvar Limite</button>
-    </div>
-  </div>
-
-  <!-- Modal Nova Dívida -->
-  <div class="modal" id="modalNovaDivida">
-    <div class="modal-corpo">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3>Cadastrar Pendência</h3>
-        <span style="font-size:22px; cursor:pointer;" onclick="fecharModalDivida()">✕</span>
-      </div>
-      <input type="text" id="inputDividaCredor" placeholder="Credor (ex: Cartão de Crédito)">
-      <input type="number" id="inputDividaOriginal" placeholder="Valor Original (R$)">
-      <input type="number" id="inputDividaAtual" placeholder="Valor Atual com Juros (R$)">
-      <input type="text" id="inputDividaJuros" placeholder="Taxa estimada (ex: 12% a.m.)">
-      <button class="btn-salvar" style="background:#dc2626;" onclick="salvarNovaDivida()">Cadastrar Dívida</button>
     </div>
   </div>
 
@@ -394,13 +434,13 @@
       <span class="icon" style="font-size:26px;">➕</span>
       <span>Novo</span>
     </button>
-    <button class="menu-btn" onclick="mudarAba('screen-contas', 3)">
-      <span class="icon">💳</span>
-      <span>Contas</span>
+    <button class="menu-btn" onclick="mudarAba('screen-relatorios', 3)">
+      <span class="icon">📈</span>
+      <span>Relatórios</span>
     </button>
-    <button class="menu-btn" onclick="mudarAba('screen-dividas', 4)">
-      <span class="icon">🛡️</span>
-      <span>Dívidas</span>
+    <button class="menu-btn" onclick="mudarAba('screen-perfil', 4)">
+      <span class="icon">⚙️</span>
+      <span>Perfil</span>
     </button>
   </div>
 
