@@ -36,12 +36,11 @@
 
     /* Topo Padrão */
     .top-header { background: var(--blue-gradient); color: white; padding: 25px 20px 20px; border-radius: 0 0 28px 28px; }
-    .header-saudacao { display: flex; justify-content: space-between; align-items: center; }
     .saldo-box { background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); padding: 18px; border-radius: 20px; margin-top: 15px; }
     .saldo-box .label { font-size: 13px; opacity: 0.85; }
     .saldo-box .valor { font-size: 28px; font-weight: bold; margin-top: 4px; }
 
-    /* Card Balanço */
+    /* Balanço Flutuante */
     .balanco-card { background: var(--card); border-radius: 20px; margin: -20px 20px 15px; padding: 15px; box-shadow: var(--shadow); display: flex; justify-content: space-around; text-align: center; }
     .balanco-item span { font-size: 12px; color: var(--text-muted); display: block; }
     .balanco-item strong { font-size: 15px; display: block; margin-top: 4px; }
@@ -51,17 +50,17 @@
     .screen-view.active { display: block; }
 
     /* Atalhos Rápidos */
-    .atalhos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 20px; }
-    .atalho-card { background: var(--card); border-radius: 16px; padding: 14px 10px; text-align: center; box-shadow: var(--shadow); border: none; cursor: pointer; }
-    .atalho-icon { font-size: 22px; margin-bottom: 6px; }
-    .atalho-label { font-size: 12px; font-weight: 600; color: var(--text); }
+    .atalhos-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 15px; }
+    .atalho-card { background: var(--card); border-radius: 16px; padding: 12px 6px; text-align: center; box-shadow: var(--shadow); border: none; cursor: pointer; }
+    .atalho-icon { font-size: 20px; margin-bottom: 4px; }
+    .atalho-label { font-size: 11px; font-weight: 600; color: var(--text); }
 
     .container { padding: 0 20px; }
     .card { background: var(--card); border-radius: 20px; padding: 18px; box-shadow: var(--shadow); margin-bottom: 15px; }
     .card-title { font-size: 15px; font-weight: bold; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 
     /* Barras de Progresso */
-    .barra-container { background: #e2e8f0; border-radius: 10px; height: 12px; width: 100%; overflow: hidden; margin: 8px 0; }
+    .barra-container { background: #e2e8f0; border-radius: 10px; height: 10px; width: 100%; overflow: hidden; margin: 8px 0; }
     .barra-preenchimento { height: 100%; border-radius: 10px; transition: width 0.4s ease; }
     .cor-verde { background: var(--green); }
     .cor-laranja { background: var(--orange); }
@@ -76,11 +75,23 @@
     .meta-card.azul { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
     .meta-card.roxo { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
 
-    /* Estilos Especiais da Tela de Dívidas (Foto 3) */
+    /* Dívidas */
     .card-total-divida { background: #fff1f2; border: 1px solid #fecdd3; border-radius: 20px; padding: 18px; margin-bottom: 15px; }
-    .card-total-divida .valor-grande { font-size: 26px; font-weight: bold; color: var(--red); margin: 6px 0; }
     .divida-item { background: var(--card); border-radius: 18px; padding: 16px; box-shadow: var(--shadow); margin-bottom: 12px; border-left: 5px solid var(--red); }
-    .tag-juros { background: #fee2e2; color: var(--red); font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 6px; }
+
+    /* CALENDÁRIO FINANCEIRO (Fotos 2 e 7) */
+    .calendario-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-weight: bold; }
+    .calendario-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
+    .cal-dia-semana { font-size: 11px; color: var(--text-muted); font-weight: bold; padding-bottom: 4px; }
+    .cal-dia { padding: 10px 0; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; background: #f8fafc; position: relative; }
+    .cal-dia.tem-despesa::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--red); }
+    .cal-dia.tem-receita::after { content: ''; position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+    .cal-dia.selecionado { background: var(--blue-main) !important; color: white !important; }
+
+    /* CONTAS E CARTÕES (Foto 1 - Módulo 2) */
+    .cartao-credito { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: 20px; padding: 18px; margin-bottom: 15px; }
+    .cartao-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .conta-bancaria-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
 
     /* Menu Inferior */
     .menu-inferior { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 10px 0 12px; z-index: 50; }
@@ -134,10 +145,10 @@
   <!-- TELA 01: DASHBOARD -->
   <div id="screen-dashboard" class="screen-view active">
     <div class="top-header">
-      <div class="header-saudacao">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
           <h2>Olá, Bem-vindo 👋</h2>
-          <p id="labelMesAno">Visão Geral do Mês</p>
+          <p style="font-size:13px; opacity:0.8;">Visão Geral do Mês</p>
         </div>
       </div>
       <div class="saldo-box">
@@ -161,18 +172,23 @@
       </div>
     </div>
 
+    <!-- 4 Atalhos Rápidos -->
     <div class="atalhos-grid">
       <button class="atalho-card" onclick="abrirModal('despesa')">
         <div class="atalho-icon">📝</div>
-        <div class="atalho-label">Registrar Gasto</div>
+        <div class="atalho-label">Gasto</div>
       </button>
-      <button class="atalho-card" onclick="mudarAba('screen-orcamento', 1)">
-        <div class="atalho-icon">📊</div>
-        <div class="atalho-label">Ver Orçamento</div>
+      <button class="atalho-card" onclick="mudarAba('screen-calendario', 1)">
+        <div class="atalho-icon">📅</div>
+        <div class="atalho-label">Calendário</div>
       </button>
-      <button class="atalho-card" onclick="mudarAba('screen-dividas', 3)">
+      <button class="atalho-card" onclick="mudarAba('screen-contas', 3)">
+        <div class="atalho-icon">💳</div>
+        <div class="atalho-label">Contas</div>
+      </button>
+      <button class="atalho-card" onclick="mudarAba('screen-dividas', 4)">
         <div class="atalho-icon">🛡️</div>
-        <div class="atalho-label">Plano Dívidas</div>
+        <div class="atalho-label">Dívidas</div>
       </button>
     </div>
 
@@ -189,19 +205,88 @@
     </div>
   </div>
 
+  <!-- TELA 07: CALENDÁRIO FINANCEIRO (Fotos 2 e 7) -->
+  <div id="screen-calendario" class="screen-view">
+    <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
+      <h2>Calendário Financeiro 📅</h2>
+      <p style="opacity: 0.8; font-size: 13px;">Vencimentos e entradas programadas</p>
+    </div>
+
+    <div class="container" style="margin-top: 15px;">
+      <!-- Calendário Mensal -->
+      <div class="card">
+        <div class="calendario-header">
+          <span id="calMesAnoLabel">Mês Vigente</span>
+        </div>
+        <div class="calendario-grid" id="calGradeDias"></div>
+      </div>
+
+      <!-- Lançamentos do Dia Selecionado -->
+      <div class="card">
+        <div class="card-title">
+          <span>Dia Selecionado (<span id="labelDiaSelecionado">Hoje</span>)</span>
+        </div>
+        <div id="listaLancamentosDia"></div>
+      </div>
+
+      <!-- Alerta dos Próximos 7 Dias -->
+      <div class="card">
+        <div class="card-title">
+          <span>Próximos 7 Dias 🔔</span>
+        </div>
+        <div id="listaProximos7Dias"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA 08: CONTAS E CARTÕES (Foto 1 - Módulo 2) -->
+  <div id="screen-contas" class="screen-view">
+    <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
+      <h2>Contas e Cartões 💳</h2>
+      <p style="opacity: 0.8; font-size: 13px;">Onde está o seu dinheiro</p>
+    </div>
+
+    <div class="container" style="margin-top: 15px;">
+      <!-- Cartão de Crédito com Barra de Limite -->
+      <div class="cartao-credito">
+        <div class="cartao-top">
+          <span style="font-weight:bold; font-size:16px;">Cartão Principal</span>
+          <span style="font-size:12px; opacity:0.8;">Fecha dia 15</span>
+        </div>
+        <div style="font-size:12px; opacity:0.8;">Fatura Atual</div>
+        <div style="font-size:26px; font-weight:bold; margin: 4px 0 10px;" id="cartaoFaturaAtual">R$ 890,00</div>
+        
+        <div class="barra-container" style="background:rgba(255,255,255,0.2);">
+          <div class="barra-preenchimento" id="barraLimiteCartao" style="width: 30%; background: #38bdf8;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:11px; opacity:0.9; margin-top:5px;">
+          <span>Limite Total: R$ 3.000,00</span>
+          <span>Disponível: R$ 2.110,00</span>
+        </div>
+      </div>
+
+      <!-- Contas Bancárias Cadastradas -->
+      <div class="card">
+        <div class="card-title">
+          <span>Contas Cadastradas</span>
+          <button class="btn-acao-secundaria" onclick="adicionarNovaConta()">+ Nova Conta</button>
+        </div>
+        <div id="listaContasBancarias"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- TELA 03: ORÇAMENTO DO MÊS -->
   <div id="screen-orcamento" class="screen-view">
     <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
       <h2>Orçamento do Mês 📊</h2>
       <p style="opacity: 0.8; font-size: 13px;">Controle sem complicação</p>
     </div>
-
     <div class="container" style="margin-top: 15px;">
       <div class="aviso-inteligente" id="avisoOrcamento">
         <span>💡</span>
-        <span id="textoAvisoOrcamento">Você tem R$ 0,00 restantes para gastar</span>
+        <span id="textoAvisoOrcamento">Você tem R$ 0,00 restantes</span>
       </div>
-
       <div class="card">
         <div class="card-title">
           <span>Progresso Geral do Mês</span>
@@ -212,10 +297,9 @@
         </div>
         <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-top: 6px;">
           <span>Gasto: <strong id="orcamentoGasto" style="color: var(--red);">R$ 0,00</strong></span>
-          <span>Limite: <strong id="orcamentoTotal" style="color: var(--text);">R$ 0,00</strong></span>
+          <span>Limite: <strong id="orcamentoTotal">R$ 0,00</strong></span>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title">
           <span>Limites por Categoria</span>
@@ -226,48 +310,24 @@
     </div>
   </div>
 
-  <!-- TELA 04: METAS E OBJETIVOS -->
-  <div id="screen-metas" class="screen-view">
-    <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px;">
-      <h2>Minhas Metas 🎯</h2>
-      <p style="opacity: 0.8; font-size: 13px;">Foco nos seus objetivos</p>
-    </div>
-
-    <div class="container" style="margin-top: 15px;">
-      <div id="listaCardsMetas"></div>
-
-      <button class="btn-salvar" style="background: white; color: var(--blue-main); border: 2px dashed var(--blue-main); margin-bottom: 20px;" onclick="abrirModalNovaMeta()">
-        + Criar Nova Meta
-      </button>
-    </div>
-  </div>
-
-  <!-- TELA 06: DÍVIDAS E QUITAÇÃO (Foto 3) -->
+  <!-- TELA 06: DÍVIDAS E QUITAÇÃO -->
   <div id="screen-dividas" class="screen-view">
     <div class="top-header" style="border-radius: 0 0 20px 20px; padding: 20px; background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);">
       <h2>Dívidas e Quitação 🛡️</h2>
       <p style="opacity: 0.8; font-size: 13px;">Estratégia para zerar pendências</p>
     </div>
-
     <div class="container" style="margin-top: 15px;">
-      <!-- Totalizador de Dívidas -->
       <div class="card-total-divida">
-        <span style="font-size: 12px; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Total em Aberto</span>
+        <span style="font-size: 12px; color: var(--text-muted); font-weight: bold;">TOTAL EM ABERTO</span>
         <div class="valor-grande" id="dividaTotalAberto">R$ 0,00</div>
-        <span style="font-size: 12px; color: #991b1b;" id="dividaEstimativaJuros">Juros acumulados: R$ 0,00</span>
+        <span style="font-size: 12px; color: #991b1b;" id="dividaEstimativaJuros">Juros: R$ 0,00</span>
       </div>
-
-      <!-- Simulador Inteligente de Quitação -->
       <div class="card" style="background: #fefce8; border: 1px solid #fef08a;">
         <div class="card-title" style="color: #854d0e;">⚡ Plano Rápido de Quitação</div>
-        <p style="font-size: 13px; color: #713f12; margin-bottom: 8px;" id="textoPlanoQuitacao">
-          Se você destinar <strong>R$ 300/mês</strong>, quitará todas as pendências em aproximadamente <strong>-- meses</strong>.
-        </p>
+        <p style="font-size: 13px; color: #713f12;" id="textoPlanoQuitacao">Destine R$ 300/mês para quitar.</p>
       </div>
-
-      <!-- Lista de Dívidas Cadastradas -->
       <div class="card-title" style="margin: 15px 0 10px 5px;">
-        <span>Suas Pendências</span>
+        <span>Pendências</span>
         <button class="btn-acao-secundaria" onclick="abrirModalNovaDivida()">+ Nova Dívida</button>
       </div>
       <div id="listaDividasCadastradas"></div>
@@ -281,33 +341,15 @@
         <h3>Novo Lançamento</h3>
         <span style="font-size:22px; cursor:pointer;" onclick="fecharModal()">✕</span>
       </div>
-
       <div class="tipo-tabs">
         <button class="tipo-btn selected-despesa" id="btn-tipo-despesa" onclick="setTipo('despesa')">Despesa</button>
         <button class="tipo-btn" id="btn-tipo-receita" onclick="setTipo('receita')">Receita</button>
       </div>
-
       <input type="text" id="campoDescricao" placeholder="Descrição (ex: Supermercado)">
       <input type="number" id="campoValor" placeholder="Valor (R$)" step="0.01">
       <select id="campoCategoria"></select>
       <input type="date" id="campoData">
-
       <button class="btn-salvar" onclick="salvarLancamento()">Salvar</button>
-    </div>
-  </div>
-
-  <!-- Modal Nova Dívida -->
-  <div class="modal" id="modalNovaDivida">
-    <div class="modal-corpo">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3>Cadastrar Pendência</h3>
-        <span style="font-size:22px; cursor:pointer;" onclick="fecharModalDivida()">✕</span>
-      </div>
-      <input type="text" id="inputDividaCredor" placeholder="Credor (ex: Cartão de Crédito, Empréstimo)">
-      <input type="number" id="inputDividaOriginal" placeholder="Valor Original (R$)">
-      <input type="number" id="inputDividaAtual" placeholder="Valor Atual com Juros (R$)">
-      <input type="text" id="inputDividaJuros" placeholder="Taxa estimada (ex: 12% a.m.)">
-      <button class="btn-salvar" style="background:#dc2626;" onclick="salvarNovaDivida()">Cadastrar Dívida</button>
     </div>
   </div>
 
@@ -323,41 +365,42 @@
     </div>
   </div>
 
-  <!-- Modal Nova Meta -->
-  <div class="modal" id="modalNovaMeta">
+  <!-- Modal Nova Dívida -->
+  <div class="modal" id="modalNovaDivida">
     <div class="modal-corpo">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3>Nova Meta Financeira</h3>
-        <span style="font-size:22px; cursor:pointer;" onclick="fecharModalMeta()">✕</span>
+        <h3>Cadastrar Pendência</h3>
+        <span style="font-size:22px; cursor:pointer;" onclick="fecharModalDivida()">✕</span>
       </div>
-      <input type="text" id="inputMetaTitulo" placeholder="Objetivo (ex: Viagem, Carro, Reserva)">
-      <input type="number" id="inputMetaAlvo" placeholder="Valor Total da Meta (R$)">
-      <input type="number" id="inputMetaAtual" placeholder="Quanto já tem guardado hoje? (R$)">
-      <button class="btn-salvar" onclick="salvarNovaMeta()">Salvar Meta</button>
+      <input type="text" id="inputDividaCredor" placeholder="Credor (ex: Cartão de Crédito)">
+      <input type="number" id="inputDividaOriginal" placeholder="Valor Original (R$)">
+      <input type="number" id="inputDividaAtual" placeholder="Valor Atual com Juros (R$)">
+      <input type="text" id="inputDividaJuros" placeholder="Taxa estimada (ex: 12% a.m.)">
+      <button class="btn-salvar" style="background:#dc2626;" onclick="salvarNovaDivida()">Cadastrar Dívida</button>
     </div>
   </div>
 
-  <!-- Menu Inferior com 5 Abas -->
+  <!-- Menu Inferior -->
   <div class="menu-inferior">
     <button class="menu-btn active" onclick="mudarAba('screen-dashboard', 0)">
       <span class="icon">🏠</span>
       <span>Início</span>
     </button>
-    <button class="menu-btn" onclick="mudarAba('screen-orcamento', 1)">
-      <span class="icon">📊</span>
-      <span>Orçamento</span>
+    <button class="menu-btn" onclick="mudarAba('screen-calendario', 1)">
+      <span class="icon">📅</span>
+      <span>Agenda</span>
     </button>
     <button class="menu-btn" onclick="abrirModal('despesa')" style="color:var(--blue-main);">
       <span class="icon" style="font-size:26px;">➕</span>
       <span>Novo</span>
     </button>
-    <button class="menu-btn" onclick="mudarAba('screen-dividas', 3)">
+    <button class="menu-btn" onclick="mudarAba('screen-contas', 3)">
+      <span class="icon">💳</span>
+      <span>Contas</span>
+    </button>
+    <button class="menu-btn" onclick="mudarAba('screen-dividas', 4)">
       <span class="icon">🛡️</span>
       <span>Dívidas</span>
-    </button>
-    <button class="menu-btn" onclick="mudarAba('screen-metas', 4)">
-      <span class="icon">🎯</span>
-      <span>Metas</span>
     </button>
   </div>
 

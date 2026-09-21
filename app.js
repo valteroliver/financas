@@ -1,19 +1,18 @@
 // Armazenamento Local
 let transacoes = JSON.parse(localStorage.getItem('fin_transacoes_v3')) || [];
 let orcamentoTotalConfig = parseFloat(localStorage.getItem('fin_orcamento_limite')) || 4000;
-let metas = JSON.parse(localStorage.getItem('fin_metas_v3')) || [
-  { id: 1, titulo: 'Reserva de Emergência', alvo: 10000, atual: 2500, cor: 'verde' },
-  { id: 2, titulo: 'Viagem de Férias', alvo: 3000, atual: 1200, cor: 'azul' }
-];
-let dividas = JSON.parse(localStorage.getItem('fin_dividas_v3')) || [
-  { id: 1, credor: 'Cartão de Crédito', original: 2200, atual: 3200, juros: '12% a.m.' },
-  { id: 2, credor: 'Empréstimo Pessoal', original: 4500, atual: 5300, juros: '8% a.m.' }
+let dividas = JSON.parse(localStorage.getItem('fin_dividas_v3')) || [];
+let contasBancarias = JSON.parse(localStorage.getItem('fin_contas_bancarias')) || [
+  { id: 1, nome: 'Nubank (Conta Digital)', saldo: 1280.75, icone: '🟣' },
+  { id: 2, nome: 'Banco do Brasil', saldo: 2450.30, icone: '🟡' },
+  { id: 3, nome: 'Dinheiro na Carteira', saldo: 150.00, icone: '💵' }
 ];
 
 let pinCadastrado = localStorage.getItem('fin_pin') || '1234';
 let pinDigitado = '';
 let tipoSelecionado = 'despesa';
 let graficoInstance = null;
+let dataFiltroCalendario = new Date().toISOString().slice(0, 10);
 
 const CATEGORIAS = {
   despesa: ['Alimentação 🍔', 'Transporte 🚗', 'Moradia 🏠', 'Lazer 🎉', 'Saúde 💊', 'Compras 🛍️', 'Acordo Dívida 🛡️'],
@@ -31,8 +30,9 @@ function mudarAba(screenId, indexBotao) {
   document.getElementById(screenId).classList.add('active');
   window.scrollTo(0, 0);
 
+  if (screenId === 'screen-calendario') carregarCalendario();
+  if (screenId === 'screen-contas') carregarContas();
   if (screenId === 'screen-orcamento') carregarTelaOrcamento();
-  if (screenId === 'screen-metas') carregarTelaMetas();
   if (screenId === 'screen-dividas') carregarTelaDividas();
   if (screenId === 'screen-dashboard') inicializarDashboard();
 }
@@ -75,12 +75,7 @@ function autenticarBiometria() {
   inicializarDashboard();
 }
 
-function bloquearApp() {
-  document.getElementById('lockscreen').style.display = 'flex';
-  limparPin();
-}
-
-// Lançamentos Rápidos
+// Modais Lançamentos
 function setTipo(tipo) {
   tipoSelecionado = tipo;
   document.getElementById('btn-tipo-despesa').className = 'tipo-btn' + (tipo === 'despesa' ? ' selected-despesa' : '');
@@ -167,11 +162,124 @@ function inicializarDashboard() {
   });
 }
 
+// TELA 07: CALENDÁRIO FINANCEIRO (Fotos 2 e 7)
+function carregarCalendario() {
+  const grade = document.getElementById('calGradeDias');
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = hoje.getMonth();
+  
+  const nomeMes = hoje.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+  document.getElementById('calMesAnoLabel').innerText = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+
+  grade.innerHTML = `
+    <div class="cal-dia-semana">D</div>
+    <div class="cal-dia-semana">S</div>
+    <div class="cal-dia-semana">T</div>
+    <div class="cal-dia-semana">Q</div>
+    <div class="cal-dia-semana">Q</div>
+    <div class="cal-dia-semana">S</div>
+    <div class="cal-dia-semana">S</div>
+  `;
+
+  const totalDias = new Date(ano, mes + 1, 0).getDate();
+
+  for (let dia = 1; dia <= totalDias; dia++) {
+    const diaFormatado = `${ano}-${String(mes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+    const temDespesa = transacoes.some(t => t.data === diaFormatado && t.tipo === 'despesa');
+    const temReceita = transacoes.some(t => t.data === diaFormatado && t.tipo === 'receita');
+
+    let classe = 'cal-dia';
+    if (diaFormatado === dataFiltroCalendario) classe += ' selecionado';
+    if (temDespesa) classe += ' tem-despesa';
+    if (temReceita) classe += ' tem-receita';
+
+    grade.innerHTML += `<div class="${classe}" onclick="selecionarDiaCalendario('${diaFormatado}')">${dia}</div>`;
+  }
+
+  mostrarLancamentosDoDia(dataFiltroCalendario);
+  mostrarProximos7Dias();
+}
+
+function selecionarDiaCalendario(data) {
+  dataFiltroCalendario = data;
+  carregarCalendario();
+}
+
+function mostrarLancamentosDoDia(data) {
+  document.getElementById('labelDiaSelecionado').innerText = data.split('-').reverse().slice(0, 2).join('/');
+  const itens = transacoes.filter(t => t.data === data);
+  const lista = document.getElementById('listaLancamentosDia');
+
+  if (itens.length === 0) {
+    lista.innerHTML = '<p style="color:#94a3b8; font-size:13px; text-align:center; padding:10px;">Nada previsto para este dia.</p>';
+  } else {
+    lista.innerHTML = itens.map(t => `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f1f5f9;">
+        <div><strong>${t.desc}</strong><br><span style="font-size:11px; color:#64748b;">${t.cat}</span></div>
+        <span style="font-weight:bold; color:${t.tipo === 'receita' ? 'var(--green)' : 'var(--red)'};">
+          ${t.tipo === 'receita' ? '+' : '-'} R$ ${t.valor.toFixed(2)}
+        </span>
+      </div>
+    `).join('');
+  }
+}
+
+function mostrarProximos7Dias() {
+  const container = document.getElementById('listaProximos7Dias');
+  const proximos = transacoes.slice(0, 4); // Exibe os compromissos mais recentes/próximos
+  container.innerHTML = proximos.length === 0 ? '<p style="color:#94a3b8; font-size:13px;">Sem contas nos próximos dias.</p>' :
+    proximos.map(t => `
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #f1f5f9; font-size:13px;">
+        <span>${t.desc} (${t.data.split('-').reverse().slice(0, 2).join('/')})</span>
+        <strong style="color:var(--red);">R$ ${t.valor.toFixed(2)}</strong>
+      </div>
+    `).join('');
+}
+
+// TELA 08: CONTAS E CARTÕES
+function carregarContas() {
+  const container = document.getElementById('listaContasBancarias');
+  container.innerHTML = contasBancarias.map((c, idx) => `
+    <div class="conta-bancaria-item">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="font-size:22px;">${c.icone}</span>
+        <div>
+          <strong style="font-size:14px; display:block;">${c.nome}</strong>
+          <span style="font-size:12px; color:var(--text-muted);">Saldo Disponível</span>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <strong style="font-size:15px; color:var(--blue-main);">R$ ${c.saldo.toFixed(2)}</strong><br>
+        <button class="btn-acao-secundaria" style="padding:2px 8px; font-size:10px;" onclick="ajustarSaldoConta(${idx})">Ajustar</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function adicionarNovaConta() {
+  const nome = prompt('Nome da nova conta ou banco (ex: Inter, Carteira):');
+  const saldo = parseFloat(prompt('Saldo inicial (R$):'));
+  if (nome && !isNaN(saldo)) {
+    contasBancarias.push({ id: Date.now(), nome, saldo, icone: '🏦' });
+    localStorage.setItem('fin_contas_bancarias', JSON.stringify(contasBancarias));
+    carregarContas();
+  }
+}
+
+function ajustarSaldoConta(idx) {
+  const novo = parseFloat(prompt(`Novo saldo para "${contasBancarias[idx].nome}":`, contasBancarias[idx].saldo));
+  if (!isNaN(novo)) {
+    contasBancarias[idx].saldo = novo;
+    localStorage.setItem('fin_contas_bancarias', JSON.stringify(contasBancarias));
+    carregarContas();
+  }
+}
+
 // TELA 03: Orçamento
 function carregarTelaOrcamento() {
   let totalGasto = 0;
   const gastosPorCat = {};
-
   transacoes.forEach(t => {
     if (t.tipo === 'despesa') {
       totalGasto += t.valor;
@@ -191,13 +299,7 @@ function carregarTelaOrcamento() {
   barra.className = 'barra-preenchimento ' + (percentual > 90 ? 'cor-vermelho' : (percentual > 70 ? 'cor-laranja' : 'cor-azul'));
 
   const aviso = document.getElementById('textoAvisoOrcamento');
-  if (totalGasto > orcamentoTotalConfig) {
-    aviso.innerText = `Atenção! Você ultrapassou o orçamento em R$ ${(totalGasto - orcamentoTotalConfig).toFixed(2)}`;
-    document.getElementById('avisoOrcamento').style.background = '#fee2e2';
-  } else {
-    aviso.innerText = `Você ainda tem R$ ${restante.toFixed(2)} para gastar este mês`;
-    document.getElementById('avisoOrcamento').style.background = '#dcfce7';
-  }
+  aviso.innerText = `Você ainda tem R$ ${restante.toFixed(2)} para gastar este mês`;
 
   const listaCat = document.getElementById('listaCategoriasOrcamento');
   const cats = Object.keys(gastosPorCat);
@@ -219,9 +321,7 @@ function abrirModalDefinirOrcamento() {
   document.getElementById('inputLimiteGeral').value = orcamentoTotalConfig;
   document.getElementById('modalDefinirOrcamento').classList.add('active');
 }
-function fecharModalOrcamento() {
-  document.getElementById('modalDefinirOrcamento').classList.remove('active');
-}
+function fecharModalOrcamento() { document.getElementById('modalDefinirOrcamento').classList.remove('active'); }
 function salvarLimiteOrcamento() {
   const val = parseFloat(document.getElementById('inputLimiteGeral').value);
   if (val > 0) {
@@ -232,101 +332,19 @@ function salvarLimiteOrcamento() {
   }
 }
 
-// TELA 04: Metas
-function carregarTelaMetas() {
-  const container = document.getElementById('listaCardsMetas');
-  container.innerHTML = metas.length === 0 ? '<p style="text-align:center; color:#94a3b8; font-size:13px; padding:20px;">Nenhuma meta cadastrada.</p>' :
-    metas.map((m, idx) => {
-      const perc = Math.min(100, Math.round((m.atual / m.alvo) * 100));
-      return `
-        <div class="meta-card ${m.cor || 'verde'}">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong style="font-size:16px;">${m.titulo}</strong>
-            <span style="font-size:13px; opacity:0.9;">${perc}%</span>
-          </div>
-          <div class="barra-container" style="background:rgba(255,255,255,0.3); height:8px;">
-            <div class="barra-preenchimento" style="width:${perc}%; background:white;"></div>
-          </div>
-          <div style="display:flex; justify-content:space-between; font-size:12px; opacity:0.9; margin-top:5px;">
-            <span>Guardado: R$ ${m.atual.toFixed(2)}</span>
-            <span>Falta: R$ ${(m.alvo - m.atual).toFixed(2)}</span>
-          </div>
-          <div style="margin-top:10px; display:flex; gap:8px;">
-            <button class="btn-acao-secundaria" onclick="guardarDinheiroMeta(${idx})">+ Guardar Valor</button>
-            <button class="btn-acao-secundaria" style="background:rgba(0,0,0,0.2); color:white;" onclick="excluirMeta(${m.id})">Excluir</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-}
-
-function abrirModalNovaMeta() { document.getElementById('modalNovaMeta').classList.add('active'); }
-function fecharModalMeta() { document.getElementById('modalNovaMeta').classList.remove('active'); }
-function salvarNovaMeta() {
-  const titulo = document.getElementById('inputMetaTitulo').value;
-  const alvo = parseFloat(document.getElementById('inputMetaAlvo').value);
-  const atual = parseFloat(document.getElementById('inputMetaAtual').value) || 0;
-  if (!titulo || isNaN(alvo) || alvo <= 0) return alert('Preencha os campos!');
-  const cores = ['verde', 'azul', 'roxo'];
-  metas.push({ id: Date.now(), titulo, alvo, atual, cor: cores[metas.length % cores.length] });
-  localStorage.setItem('fin_metas_v3', JSON.stringify(metas));
-  fecharModalMeta();
-  carregarTelaMetas();
-}
-function guardarDinheiroMeta(idx) {
-  const val = parseFloat(prompt(`Quanto deseja guardar para "${metas[idx].titulo}"? (R$)`));
-  if (!isNaN(val) && val > 0) {
-    metas[idx].atual += val;
-    localStorage.setItem('fin_metas_v3', JSON.stringify(metas));
-    carregarTelaMetas();
-  }
-}
-function excluirMeta(id) {
-  if (confirm('Deseja excluir esta meta?')) {
-    metas = metas.filter(m => m.id !== id);
-    localStorage.setItem('fin_metas_v3', JSON.stringify(metas));
-    carregarTelaMetas();
-  }
-}
-
-// TELA 06: DÍVIDAS E QUITAÇÃO
+// TELA 06: Dívidas
 function carregarTelaDividas() {
   let totalDevido = 0;
-  let totalOriginal = 0;
-
-  dividas.forEach(d => {
-    totalDevido += d.atual;
-    totalOriginal += d.original;
-  });
-
-  const jurosAcumulados = Math.max(0, totalDevido - totalOriginal);
+  dividas.forEach(d => totalDevido += d.atual);
   document.getElementById('dividaTotalAberto').innerText = `R$ ${totalDevido.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-  document.getElementById('dividaEstimativaJuros').innerText = `Juros acumulados: R$ ${jurosAcumulados.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-
-  // Simulação: se pagar R$ 300 por mês
-  const aporteEstimado = 300;
-  const meses = totalDevido > 0 ? Math.ceil(totalDevido / aporteEstimado) : 0;
-  document.getElementById('textoPlanoQuitacao').innerHTML = `Se você destinar <strong>R$ ${aporteEstimado}/mês</strong>, quitará tudo em aproximadamente <strong>${meses} meses</strong>.`;
-
-  // Lista
+  
   const container = document.getElementById('listaDividasCadastradas');
   container.innerHTML = dividas.length === 0 ? '<p style="text-align:center; color:#94a3b8; font-size:13px; padding:20px;">Nenhuma pendência cadastrada!</p>' :
     dividas.map(d => `
       <div class="divida-item">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-          <div>
-            <strong style="font-size:15px; display:block;">${d.credor}</strong>
-            <span style="font-size:12px; color:var(--text-muted);">Original: R$ ${d.original.toFixed(2)}</span>
-          </div>
-          <span class="tag-juros">${d.juros || 'Com juros'}</span>
-        </div>
-        <div style="font-size:20px; font-weight:bold; color:var(--red); margin:8px 0;">
-          R$ ${d.atual.toFixed(2)}
-        </div>
-        <div style="display:flex; gap:8px; margin-top:8px;">
-          <button class="btn-acao-secundaria" style="background:#dbeafe; color:var(--blue-main);" onclick="transformarEmAcordo(${d.id})">🤝 Transformar em Acordo</button>
-          <button class="btn-acao-secundaria" style="background:#fee2e2; color:var(--red);" onclick="excluirDivida(${d.id})">Excluir</button>
-        </div>
+        <strong>${d.credor}</strong>
+        <div style="font-size:18px; font-weight:bold; color:var(--red); margin:5px 0;">R$ ${d.atual.toFixed(2)}</div>
+        <button class="btn-acao-secundaria" style="background:#dbeafe; color:var(--blue-main);" onclick="transformarEmAcordo(${d.id})">🤝 Transformar em Acordo</button>
       </div>
     `).join('');
 }
@@ -337,55 +355,24 @@ function salvarNovaDivida() {
   const credor = document.getElementById('inputDividaCredor').value;
   const original = parseFloat(document.getElementById('inputDividaOriginal').value);
   const atual = parseFloat(document.getElementById('inputDividaAtual').value);
-  const juros = document.getElementById('inputDividaJuros').value || 'Juros altos';
-
-  if (!credor || isNaN(atual) || atual <= 0) return alert('Preencha os dados da dívida!');
-
-  dividas.push({ id: Date.now(), credor, original: original || atual, atual, juros });
+  if (!credor || isNaN(atual)) return alert('Preencha os dados!');
+  dividas.push({ id: Date.now(), credor, original: original || atual, atual, juros: '10%' });
   localStorage.setItem('fin_dividas_v3', JSON.stringify(dividas));
-
   fecharModalDivida();
   carregarTelaDividas();
 }
-
-function excluirDivida(id) {
-  if (confirm('Deseja excluir esta pendência?')) {
-    dividas = dividas.filter(d => d.id !== id);
-    localStorage.setItem('fin_dividas_v3', JSON.stringify(dividas));
-    carregarTelaDividas();
-  }
-}
-
-// O Recurso Principal: Transformar em Acordo/Parcela no Fluxo Mensal
 function transformarEmAcordo(id) {
   const d = dividas.find(item => item.id === id);
   if (!d) return;
-
-  const parcelas = prompt(`Fechou acordo com "${d.credor}"?\nEm quantas parcelas você negociou? (Ex: 10)`);
-  const numParcelas = parseInt(parcelas);
-  if (isNaN(numParcelas) || numParcelas <= 0) return;
-
-  const valorParcela = prompt(`Qual é o valor de CADA parcela? (R$)`);
-  const val = parseFloat(valorParcela);
-  if (isNaN(val) || val <= 0) return;
-
-  // Lança como compromisso de despesa no fluxo mensal do Dashboard
-  transacoes.unshift({
-    id: Date.now(),
-    desc: `Acordo: ${d.credor} (1/${numParcelas})`,
-    valor: val,
-    tipo: 'despesa',
-    cat: 'Acordo Dívida 🛡️',
-    data: new Date().toISOString().slice(0, 10)
-  });
-  localStorage.setItem('fin_transacoes_v3', JSON.stringify(transacoes));
-
-  // Remove da lista de dívidas atrasadas
-  dividas = dividas.filter(item => item.id !== id);
-  localStorage.setItem('fin_dividas_v3', JSON.stringify(dividas));
-
-  alert(`Sucesso! O acordo foi firmado e a 1ª parcela de R$ ${val.toFixed(2)} agora compõe o seu orçamento do mês!`);
-  carregarTelaDividas();
+  const val = parseFloat(prompt(`Valor da parcela negociada para "${d.credor}": (R$)`));
+  if (val > 0) {
+    transacoes.unshift({ id: Date.now(), desc: `Acordo: ${d.credor}`, valor: val, tipo: 'despesa', cat: 'Acordo Dívida 🛡️', data: new Date().toISOString().slice(0, 10) });
+    dividas = dividas.filter(item => item.id !== id);
+    localStorage.setItem('fin_transacoes_v3', JSON.stringify(transacoes));
+    localStorage.setItem('fin_dividas_v3', JSON.stringify(dividas));
+    alert('Acordo firmado e integrado ao seu orçamento!');
+    carregarTelaDividas();
+  }
 }
 
 // Service Worker Offline
